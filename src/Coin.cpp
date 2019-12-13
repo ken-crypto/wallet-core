@@ -69,6 +69,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
         return Cosmos::Address::isValid(string, hrp);
 
     case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinTest:
     case TWCoinTypeDigiByte:
     case TWCoinTypeLitecoin:
     case TWCoinTypeMonacoin:
@@ -201,6 +202,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
         return Binance::Address(publicKey).string();
 
     case TWCoinTypeBitcoin:
+    case TWCoinTypeBitcoinTest:
     case TWCoinTypeDigiByte:
     case TWCoinTypeGroestlcoin:
     case TWCoinTypeLitecoin:
