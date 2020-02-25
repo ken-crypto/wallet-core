@@ -21,7 +21,7 @@
         }
     }, 
     {
-        "id": "ethereum", 
+        "id": "ETH", 
         "name": "Ethereum", 
         "symbol": "ETH", 
         "decimals": 18, 
@@ -44,7 +44,7 @@
         }
     }, 
     {
-        "id": "bitcoin", 
+        "id": "BTC", 
         "name": "Bitcoin", 
         "symbol": "BTC", 
         "decimals": 8, 
@@ -324,7 +324,7 @@
         }
     }, 
     {
-        "id": "litecoin", 
+        "id": "LTC", 
         "name": "Litecoin", 
         "symbol": "LTC", 
         "decimals": 8, 
@@ -609,8 +609,8 @@
         }
     }, 
     {
-        "id": "ripple", 
-        "name": "XRP", 
+        "id": "XRP",
+        "name": "Ripple",
         "symbol": "XRP", 
         "decimals": 6, 
         "blockchain": "Ripple", 
@@ -674,7 +674,7 @@
         }
     }, 
     {
-        "id": "stellar", 
+        "id": "XLM", 
         "name": "Stellar", 
         "symbol": "XLM", 
         "decimals": 7, 
