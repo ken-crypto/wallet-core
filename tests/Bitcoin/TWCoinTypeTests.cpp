@@ -29,6 +29,6 @@ TEST(TWBitcoinCoinType, TWCoinType) {
     assertStringsEqual(symbol, "BTC");
     assertStringsEqual(txUrl, "https://blockchair.com/bitcoin/transaction/0607f62530b68cfcc91c57a1702841dd399a899d0eecda8e31ecca3f52f01df2");
     assertStringsEqual(accUrl, "https://blockchair.com/bitcoin/address/17A16QmavnUfCW11DAApiJxp7ARnxN5pGX");
-    assertStringsEqual(id, "bitcoin");
+    assertStringsEqual(id, "BTC");
     assertStringsEqual(name, "Bitcoin");
 }

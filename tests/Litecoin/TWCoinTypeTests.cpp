@@ -29,6 +29,6 @@ TEST(TWLitecoinCoinType, TWCoinType) {
     assertStringsEqual(symbol, "LTC");
     assertStringsEqual(txUrl, "https://blockchair.com/litecoin/transaction/t123");
     assertStringsEqual(accUrl, "https://blockchair.com/litecoin/address/a12");
-    assertStringsEqual(id, "litecoin");
+    assertStringsEqual(id, "LTC");
     assertStringsEqual(name, "Litecoin");
 }
