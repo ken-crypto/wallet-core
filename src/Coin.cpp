@@ -128,7 +128,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string &string) {
     case TWCoinTypeNimiq:
         return Nimiq::Address::isValid(string);
 
-    case TWCoinTypeXRP:
+    case TWCoinTypeRipple:
         return Ripple::Address::isValid(string) ||
                Ripple::XAddress::isValid(string);
 
@@ -263,7 +263,7 @@ std::string TW::deriveAddress(TWCoinType coin, const PublicKey &publicKey) {
     case TWCoinTypeAion:
         return Aion::Address(publicKey).string();
 
-    case TWCoinTypeXRP:
+    case TWCoinTypeRipple:
         return Ripple::Address(publicKey).string();
 
     case TWCoinTypeTezos:

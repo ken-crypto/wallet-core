@@ -14,21 +14,21 @@
 
 
 TEST(TWXRPCoinType, TWCoinType) {
-    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeXRP));
+    auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeRipple));
     auto txId = TWStringCreateWithUTF8Bytes("E26AB8F3372D2FC02DEC1FD5674ADAB762D684BFFDBBDF5D674E9D7CF4A47054");
-    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeXRP, txId));
+    auto txUrl = WRAPS(TWCoinTypeConfigurationGetTransactionURL(TWCoinTypeRipple, txId));
     auto accId = TWStringCreateWithUTF8Bytes("rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU");
-    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeXRP, accId));
-    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeXRP));
-    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeXRP));
+    auto accUrl = WRAPS(TWCoinTypeConfigurationGetAccountURL(TWCoinTypeRipple, accId));
+    auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeRipple));
+    auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeRipple));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeXRP), 6);
-    ASSERT_EQ(TWBlockchainRipple, TWCoinTypeBlockchain(TWCoinTypeXRP));
-    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeXRP));
-    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeXRP));
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeRipple), 6);
+    ASSERT_EQ(TWBlockchainRipple, TWCoinTypeBlockchain(TWCoinTypeRipple));
+    ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeRipple));
+    ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeRipple));
     assertStringsEqual(symbol, "XRP");
     assertStringsEqual(txUrl, "https://bithomp.com/explorer/E26AB8F3372D2FC02DEC1FD5674ADAB762D684BFFDBBDF5D674E9D7CF4A47054");
     assertStringsEqual(accUrl, "https://bithomp.com/explorer/rfkH7EuS1XcSkB9pocy1R6T8F4CsNYixYU");
-    assertStringsEqual(id, "ripple");
-    assertStringsEqual(name, "XRP");
+    assertStringsEqual(id, "XRP");
+    assertStringsEqual(name, "Ripple");
 }
