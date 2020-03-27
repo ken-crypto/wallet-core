@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,5 +13,7 @@ TWString *_Nonnull TWStringCreateWithNSString(NSString *string) {
 }
 
 NSString *_Nonnull TWStringNSString(TWString *_Nonnull string) {
-    return [[NSString alloc] initWithUTF8String:TWStringUTF8Bytes(string)];
+    NSString *str = [[NSString alloc] initWithUTF8String:TWStringUTF8Bytes(string)];
+    TWStringDelete(string);
+    return str;
 }

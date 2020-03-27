@@ -1,5 +1,5 @@
 // Copyright © 2017 Pieter Wuille
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -110,7 +110,7 @@ std::pair<std::string, Data> Bech32::decode(const std::string& str) {
     if (lower && upper)
         ok = false;
     size_t pos = str.rfind('1');
-    if (ok && str.size() <= 90 && pos != str.npos && pos >= 1 && pos + 7 <= str.size()) {
+    if (ok && str.size() <= 120 && pos != str.npos && pos >= 1 && pos + 7 <= str.size()) {
         Data values;
         values.resize(str.size() - 1 - pos);
         for (size_t i = 0; i < str.size() - 1 - pos; ++i) {

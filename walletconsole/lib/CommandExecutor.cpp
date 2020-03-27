@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -32,7 +32,8 @@ CommandExecutor::CommandExecutor(ostream& out)
     _coins(out), 
     _buffer(out),
     _keys(out, _coins),
-    _address(out, _coins, _keys)
+    _address(out, _coins, _keys),
+    _util(out)
 {
 }
 
@@ -116,7 +117,7 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "coins") { _coins.coins(); return false; }
     if (cmd == "coin") { if (!checkMinParams(params, 1)) { return false; } setCoin(params[1], true); return false; }
 
-    if (cmd == "newkey") { return _keys.newKey(res); }
+    if (cmd == "newkey") { return _keys.newKey(_activeCoin, res); }
     if (cmd == "pubpri") { if (!checkMinParams(params, 1)) { return false; } return _keys.pubPri(_activeCoin, params[1], res); }
     if (cmd == "pripub") { if (!checkMinParams(params, 1)) { return false; } return _keys.priPub(params[1], res); }
     if (cmd == "setmnemonic" || cmd == "setmenmonic") { if (!checkMinParams(params, 1)) { return false; } _keys.setMnemonic(params); return false; }
@@ -135,11 +136,11 @@ bool CommandExecutor::executeOne(const string& cmd, const vector<string>& params
     if (cmd == "toninitmsg") { if (!checkMinParams(params, 1)) { return false; } setCoin("ton", false); return TonCoin::tonInitMsg(params[1], res); }
 
     if (cmd == "hex") { if (!checkMinParams(params, 1)) { return false; } return Util::hex(params[1], res); }
-    if (cmd == "base64encode") { if (!checkMinParams(params, 1)) { return false; } return Util::base64Encode(params[1], res); }
-    if (cmd == "base64decode") { if (!checkMinParams(params, 1)) { return false; } return Util::base64Decode(params[1], res); }
+    if (cmd == "base64encode") { if (!checkMinParams(params, 1)) { return false; } return _util.base64Encode(params[1], res); }
+    if (cmd == "base64decode") { if (!checkMinParams(params, 1)) { return false; } return _util.base64Decode(params[1], res); }
     
-    if (cmd == "filew") { if (!checkMinParams(params, 2)) { return false; } return Util::fileW(params[1], params[2], res, _out); }
-    if (cmd == "filer") { if (!checkMinParams(params, 1)) { return false; } return Util::fileR(params[1], res, _out); }
+    if (cmd == "filew") { if (!checkMinParams(params, 2)) { return false; } return _util.fileW(params[1], params[2], res); }
+    if (cmd == "filer") { if (!checkMinParams(params, 1)) { return false; } return _util.fileR(params[1], res); }
 
     // fallback
     _out << "Unknown command:  " << cmd << endl << "Type 'help' for list of commands." << endl;
@@ -202,12 +203,11 @@ bool CommandExecutor::setCoin(const string& coin, bool force) {
     if (!_coins.findCoin(coin, c)) {
         return false;
     }
-    if (_activeCoin == c.id && !force) {
-        // already on that coin
-        return true;
+    if (_activeCoin != c.id || force) {
+        // need to change
+        _activeCoin = c.id;
+        _out << "Set active coin to: " << c.id << "    Use 'coin' to change.  (name: '" << c.name << "'  symbol: " << c.symbol << "  numericalid: " << c.c << ")" << endl;
     }
-    _activeCoin = c.id;
-    _out << "Set active coin to: " << c.id << "    Use 'coin' to change.  (name: '" << c.name << "'  symbol: " << c.symbol << "  numericalid: " << c.c << ")" << endl;
     return true;
 }
 

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,5 +13,7 @@ TWData *_Nonnull TWDataCreateWithNSData(NSData *data) {
 }
 
 NSData *_Nonnull TWDataNSData(TWData *_Nonnull data) {
-    return [[NSData alloc] initWithBytes:TWDataBytes(data) length:TWDataSize(data)];
+    NSData *result = [NSData dataWithBytes:TWDataBytes(data) length:TWDataSize(data)];
+    TWDataDelete(data);
+    return result;
 }

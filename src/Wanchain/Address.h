@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -22,8 +22,3 @@ class Address : public Ethereum::Address {
     std::string string() const;
 };
 } // namespace TW::Wanchain
-
-/// Wrapper for C interface.
-struct TWWanchainAddress {
-    TW::Wanchain::Address impl;
-};

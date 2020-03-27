@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,10 +24,20 @@ const string TYPE_PREFIX_MSG_REDELEGATE = "cosmos-sdk/MsgBeginRedelegate";
 const string TYPE_PREFIX_MSG_WITHDRAW_REWARD = "cosmos-sdk/MsgWithdrawDelegationReward";
 const string TYPE_PREFIX_PUBLIC_KEY = "tendermint/PubKeySecp256k1";
 
-static json broadcastJSON(json& jsonObj) {
+static string broadcastMode(Proto::BroadcastMode mode) {
+    switch (mode) {
+    case Proto::BroadcastMode::BLOCK:
+        return "block";
+    case Proto::BroadcastMode::ASYNC:
+        return "async";
+    default: return "sync";
+    }
+}
+
+static json broadcastJSON(json& j, Proto::BroadcastMode mode) {
     return {
-        {"tx", jsonObj},
-        {"mode", "block"}
+        {"tx", j},
+        {"mode", broadcastMode(mode)}
     };
 }
 
@@ -60,8 +70,10 @@ static json feeJSON(const Proto::Fee& fee) {
 }
 
 static json messageSend(const Proto::Message_Send& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_SEND : message.type_prefix();
+
     return {
-        {"type", TYPE_PREFIX_MSG_SEND},
+        {"type", typePrefix},
         {"value", {
             {"amount", amountsJSON(message.amounts())},
             {"from_address", message.from_address()},
@@ -71,8 +83,10 @@ static json messageSend(const Proto::Message_Send& message) {
 }
 
 static json messageDelegate(const Proto::Message_Delegate& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_DELEGATE : message.type_prefix();
+
     return {
-        {"type", TYPE_PREFIX_MSG_DELEGATE},
+        {"type", typePrefix},
         {"value", {
             {"amount", amountJSON(message.amount())},
             {"delegator_address", message.delegator_address()},
@@ -82,8 +96,10 @@ static json messageDelegate(const Proto::Message_Delegate& message) {
 }
 
 static json messageUndelegate(const Proto::Message_Undelegate& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_UNDELEGATE : message.type_prefix();
+
     return {
-        {"type", TYPE_PREFIX_MSG_UNDELEGATE},
+        {"type", typePrefix},
         {"value", {
             {"amount", amountJSON(message.amount())},
             {"delegator_address", message.delegator_address()},
@@ -93,8 +109,10 @@ static json messageUndelegate(const Proto::Message_Undelegate& message) {
 }
 
 static json messageRedelegate(const Proto::Message_BeginRedelegate& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_REDELEGATE : message.type_prefix();
+
     return {
-        {"type", TYPE_PREFIX_MSG_REDELEGATE},
+        {"type", typePrefix},
         {"value", {
             {"amount", amountJSON(message.amount())},
             {"delegator_address", message.delegator_address()},
@@ -105,8 +123,10 @@ static json messageRedelegate(const Proto::Message_BeginRedelegate& message) {
 }
 
 static json messageWithdrawReward(const Proto::Message_WithdrawDelegationReward& message) {
+    auto typePrefix = message.type_prefix().empty() ? TYPE_PREFIX_MSG_WITHDRAW_REWARD : message.type_prefix();
+
     return {
-        {"type", TYPE_PREFIX_MSG_WITHDRAW_REWARD},
+        {"type", typePrefix},
         {"value", {
             {"delegator_address", message.delegator_address()},
             {"validator_address", message.validator_address()}
@@ -164,9 +184,7 @@ json Cosmos::signaturePreimage(const Proto::SigningInput& input) {
 json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signature) {
     auto privateKey = PrivateKey(input.private_key());
     auto publicKey = privateKey.getPublicKey(TWPublicKeyTypeSECP256k1);
-    auto typePrefix = input.type_prefix().empty() ? TYPE_PREFIX_MSG_SEND : input.type_prefix();
     json tx = {
-        {"type", typePrefix},
         {"fee", feeJSON(input.fee())},
         {"memo", input.memo()},
         {"msg", messagesJSON(input)},
@@ -174,5 +192,5 @@ json Cosmos::transactionJSON(const Proto::SigningInput& input, const Data& signa
             signatureJSON(signature, Data(publicKey.bytes))
         })}
     };
-    return broadcastJSON(tx);
+    return broadcastJSON(tx, input.mode());
 }

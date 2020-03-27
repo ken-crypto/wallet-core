@@ -88,14 +88,6 @@ class CodeGenerator
     render_template(header: 'jni/header.erb', template: 'jni_c.erb', output_subfolder: 'jni/cpp/generated', extension: 'c')
   end
 
-  def render_js
-    render_template(header: 'js/header.erb', template: 'js.erb', output_subfolder: 'js/js/generated', extension: 'ts')
-
-    index_ts = render('js/index.ts.erb')
-    index_ts_path = File.expand_path(File.join(output_folder, 'js/lib/', 'index.ts'))
-    File.write(index_ts_path, index_ts)
-  end
-
   def render(file, locals = {})
     @locals = locals
     path = File.expand_path(file, File.join(File.dirname(__FILE__), 'templates'))
@@ -110,8 +102,7 @@ class CodeGenerator
   end
 
   def should_return_string(method)
-    return false if method.parameters.empty?
-
+    # Note: method with no parameters can also return string
     method.return_type.name == :string
   end
 

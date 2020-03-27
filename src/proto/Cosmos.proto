@@ -13,12 +13,19 @@ message Fee {
     uint64 gas = 2;
 }
 
+enum BroadcastMode {
+    BLOCK = 0; // Wait for the tx to pass/fail CheckTx, DeliverTx, and be committed in a block
+    SYNC = 1;  // Wait for the tx to pass/fail CheckTx
+    ASYNC = 2; // Don't wait for pass/fail CheckTx; send and return tx immediately
+}
+
 message Message {
     // cosmos-sdk/MsgSend
     message Send {
         string from_address = 1;
         string to_address = 2;
         repeated Amount amounts = 3;
+        string type_prefix = 4;
     }
 
     // cosmos-sdk/MsgDelegate to stake
@@ -26,6 +33,7 @@ message Message {
         string delegator_address = 1;
         string validator_address = 2;
         Amount amount = 3;
+        string type_prefix = 4;
     }
 
     // cosmos-sdk/MsgUndelegate to unstake
@@ -33,6 +41,7 @@ message Message {
         string delegator_address = 1;
         string validator_address = 2;
         Amount amount = 3;
+        string type_prefix = 4;
     }
 
     // cosmos-sdk/MsgBeginRedelegate
@@ -41,12 +50,14 @@ message Message {
         string validator_src_address = 2;
         string validator_dst_address = 3;
         Amount amount = 4;
+        string type_prefix = 5;
     }
 
     // cosmos-sdk/MsgWithdrawDelegationReward
     message WithdrawDelegationReward {
         string delegator_address = 1;
         string validator_address = 2;
+        string type_prefix = 3;
     }
 
     message RawJSON {
@@ -75,7 +86,8 @@ message SigningInput {
     bytes private_key = 6;
 
     repeated Message messages = 7;
-    string type_prefix = 8;
+
+    BroadcastMode mode = 8;
 }
 
 // Transaction signing output.

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,6 +14,13 @@
 
 using namespace TW;
 using namespace TW::Stellar;
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(input);
+    auto output = Proto::SigningOutput();
+    output.set_signature(signer.sign());
+    return output;
+}
 
 std::string Signer::sign() const noexcept {
 

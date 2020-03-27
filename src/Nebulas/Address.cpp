@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -52,7 +52,7 @@ Address::Address(const PublicKey &publicKey) {
     }
     const auto data = publicKey.hash(
         {Address::AddressPrefix, Address::NormalType},
-        static_cast<Data (*)(const byte *, const byte *)>(Hash::sha3_256ripemd), false);
+        static_cast<Hash::HasherSimpleType>(Hash::sha3_256ripemd), false);
         
     std::copy(data.begin(), data.end(), bytes.begin());
     auto checksum = Hash::sha3_256(data);

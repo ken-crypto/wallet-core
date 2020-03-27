@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,125 +14,118 @@ class SolanaTests: XCTestCase {
     func testAddressFromPrivateKey() {
         let privateKey = PrivateKey(data: privateKeyData)!
         let publicKey = privateKey.getPublicKeyEd25519()
-        let address = SolanaAddress(publicKey: publicKey)
+        let address = AnyAddress(publicKey: publicKey, coin: .solana)
         XCTAssertEqual(address.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
     }
 
     func testAddressFromPublicKey() {
         let publicKey = PublicKey(data: Data(Base58.decodeNoCheck(string: "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")!), type: PublicKeyType.ed25519)!
-        let address = SolanaAddress(publicKey: publicKey)
+        let address = AnyAddress(publicKey: publicKey, coin: .solana)
         XCTAssertEqual(address.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
     }
 
     func testAddressFromString() {
         let addressString = "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q"
-        let address = SolanaAddress(string: addressString)
+        let address = AnyAddress(string: addressString, coin: .solana)
         XCTAssertEqual(address!.description, "7v91N7iZ9mNicL8WfG6cgSCKyRXydQjLh6UYBWwm6y1Q")
     }
 
     func testTransferSigner() throws {
         let transferMessage = SolanaTransfer.with {
-            $0.privateKey = privateKeyData
             $0.recipient = "EN2sCsJ1WDV8UFqsiTXHcUPUxQ4juE71eCknHYYMifkd"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.transferTransaction = transferMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = privateKeyData
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        01fda1c8ad8872d94f7eab52f9c38dc77e1061f4897e3de2b8469eb0992269f6fa1f173e93dbb2da738ab4e895\
-        9ffa50cd087cdfa889f3a1b8acdd62552f7c1d070100020366c2f508c9c555cacc9fb26d88e88dd54e210bb5a8\
-        bce5687f60d7e75c4cd07fc68b3c894c782b05a9c27fc6c66eb14d4e7d31de9086ab7d2129bcb0493afa020000\
-        000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000\
-        000000000000000000000000000000000001020200010c020000002a00000000000000
+        let expectedString = """
+        3p2kzZ1DvquqC6LApPuxpTg5CCDVPqJFokGSnGhnBHrta4uq7S2EyehV1XNUVXp51D69GxGzQZU\
+        jikfDzbWBG2aFtG3gHT1QfLzyFKHM4HQtMQMNXqay1NAeiiYZjNhx9UvMX4uAQZ4Q6rx6m2AYfQ\
+        7aoMUrejq298q1wBFdtS9XVB5QTiStnzC7zs97FUEK2T4XapjF1519EyFBViTfHpGpnf5bfizDz\
+        sW9kYUtRDW1UC2LgHr7npgq5W9TBmHf9hSmRgM9XXucjXLqubNWE7HUMhbKjuBqkirRM
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
     func testDelegateStakeSigner() throws {
         let delegateStakeMessage = SolanaStake.with {
-            $0.fromPrivateKey = Data(Base58.decodeNoCheck( string: "GGT4G41n1K3E4MTjb7VwADSFNJA3Jx7wUxm54Fpcje6w")!)
-            $0.stakePrivateKey = Data(Base58.decodeNoCheck( string: "2bwUDLUVYCfUhQHiAiwvHzM8oNT7pdk5J1XjhTLeumP5")!)
-            $0.votePubkey = "FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec"
+            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.stakeTransaction = delegateStakeMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        02d6c09b562bcb41e815f2d9a30511a932461df5a0c72a0e602bca84ff51067d639cfaa63bc56ebd9272731f88\
-        21a9965745abcfe2a20af35058933c5887739a0aaf1260437b1910cd332ce4a51b0a5c0a125456142c0e96ab7b\
-        7b10b3455cf9ca9033a49223b66e2e389f0993689b2ec1a48c169fcf0b920510f30e1800fea60602000507af8f\
-        866c01b3b67a8a7edfda2424a4869210f361a98db7828587856f0eb8efb449a6029108b84a1bfc74bd11cce6e0\
-        cd672dabe9d3993a028f3febddb7183773db1d1b3c012b3b486eeee5627fa15c54ec8b33c80dd436d72d0fbdcd\
-        0453756906a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d817a502050b68\
-        0791e6ce6db88e1e5b7150f61fc6790a4eb4d10000000000000000000000000000000000000000000000000000\
-        0000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000000000\
-        0000000000000000000000000000000000000000000000000000000000020502000134000000002a0000000000\
-        0000600000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000060401\
-        0203040c000000002a00000000000000
+        let expectedString = """
+        7gcsGMV8fPkuSDegrBk5KF4eZtmGqdixEr5Kxx7m74nErH5EWxkKcvy5LKg3kqKHLMtzqGXrM8EdVskLu5k6cQUVmz\
+        nfd6iGpuDkn4BWi8HaqSoaeL7DCx6QHLUwcyvorfqPkgSaYopY9MeB6MGKS4bKCQi1paP7eEKZj9JgAZTHnpzAuFzq\
+        E5dC98MrbThoBmHqfybw1jHssp4NZjrxsuMz4oYcHe837WmnpinE68QEVf9FzuoXKrMDwYZQYogJHUZgxghvMmJu3X\
+        VZk7hL1h7SgE9ow2SvvNfAUYfUTuz8N9m6JcXgwmNL51ZweW9F1fekmSKE3vLEAaVvvYFsDxn1gt4bXuTdAMuUDKdH\
+        33YMLQr8eEsdUDZUm33KtuE7Ddy84NEg3KbpWAy8T4vkwiLyvoyjmMdzCkMuobyXWQV1rfRk5vTJ4x6dMgznfAeKEq\
+        md6xZ2hN8JBmTenP5dsvZCCSCf4G7cUkdndKu552KALqiNHd5msgLJvJKSHmZjFhS43fDCvkG7njF8yaZzWjmAknWU\
+        BbV6YaGmD3XmcWfJgvB1zivZJhiMbzopP8Nm5wL5iDbCrSZTGq2tzEsTvje75wv2RtuAcgiicEPTuPAin9fKyMbCpf\
+        67pGgWPwH5DwYumMwd8zwoJyuakyqFsFLnBKTvp8pFCijdj7fEhyC31xuMV7crwyrN5X3y7QKCE7PZcBP637YHEPtT\
+        vt1ECp4CqBSnvPc8vRD8EMhHe5jRFSDkQriUenEPFc51dTDTJWL26xuiTivktEm6ahHq5d6MPr4NRDvcRG2cZvEgxH\
+        BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
     func testDeactivateStakeSigner() throws {
         let deactivateStakeMessage = SolanaDeactivateStake.with {
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q")!)
-            $0.votePubkey = "B7Cx2wYAry78VNR8uoewzFDq3FRKJh8exNMyzrpQSfLB"
+            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
         }
         let input = SolanaSigningInput.with {
             $0.deactivateStakeTransaction = deactivateStakeMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        019a5534012ae734086fdcef5e7838c88a025ee2dd96b945753bdd5d90d9b43663b47f674e20835759cb\
-        7c50a3238db1f1d961be53f7b4d8cb989b003d16163c0c01000304bb25296230c34d03f077f3eb35c4b4\
-        a2ca436bef2e4628b77a32bb743d6df8ea962bdd5edcbc6f93841f68ade86a279756734dbb921b6d1cf1\
-        aa5460dbe40f2806a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d8\
-        179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc00000000000000000000000000000000000\
-        000000000000000000000000000000000000000103030001020403000000
+        let expectedString = """
+        AhfB77PTGTKBfbGPGuEz2khbBy8m8Kou1zqZST9dP7PLJNSeEze5NJuCh5qecPLa3S8xAQ6mTULmnAWiW81ib87nhy\
+        wFtx5nKiUvmhdXsvKCSX6NNtNXdRz5yZi3UEop4obco85SY2czS6n4SJwmtDedHLtg9urqdZVth7AUM8KAtrRsksyv\
+        ZRYXh64Z8QGyNY7ekj31ae11avGiSDNWYZZHqx7VPWRsKeatGyGk5zPmnRdL8ABMQgJ1Te7wAWwVnNn5QcoAxDuPw6\
+        uDctP8Q5S4TieRVatCnukQFj5BTJisez3E2ZJPWhVrMh4K3wEFkPHA7dR
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
     func testWithdrawStakeSigner() throws {
         let withdrawMessage = SolanaWithdrawStake.with {
-            $0.privateKey = Data(Base58.decodeNoCheck( string: "5PcaDJjTMnZEqJzayijWhYJAbUuURjtkJq8Zi2HD2k7Q")!)
-            $0.recipient = "C3e7ryQjYJFSUetohBofTaWEBbNcq4yVX43hi7igVtcP"
+            $0.validatorPubkey = "4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC"
             $0.value = 42
         }
         let input = SolanaSigningInput.with {
             $0.withdrawTransaction = withdrawMessage
             $0.recentBlockhash = "11111111111111111111111111111111"
+            $0.privateKey = Data(Base58.decodeNoCheck( string: "AevJ4EWcvQ6dptBDvF2Ri5pU6QSBjkzSGHMfbLFKa746")!)
         }
 
-        let output = SolanaSigner.sign(input: input)
+        let output: SolanaSigningOutput = AnySigner.sign(input: input, coin: .solana)
 
-        let expectedHexString = """
-        010ffa019ccce82c7cbed48f76897145e0ce726f9e73aaf49bd301c3ba0635e840f54838df6e3378a3d2\
-        39c017783251c00f030f73f7dca1c8a64e6b3469eecc0101000405bb25296230c34d03f077f3eb35c4b4\
-        a2ca436bef2e4628b77a32bb743d6df8eaa41db0070ae3aee30c6ce259f81a49cd15603fe29b47ba80ac\
-        734ff3911462a006a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a7d5\
-        17193584d0feed9bb3431d13206be544281b57b8566cc5375ff400000006a1d8179137542a983437bdfe\
-        2a7ab2557f535c8a78722b68a49dc0000000000000000000000000000000000000000000000000000000\
-        000000000000000000010404000102030c020000002a00000000000000
+        let expectedString = """
+        7Y1Wg1yHNs8MgWFiFSfcsRtqdMwZg8oGeQnTABYDfyDnof4VSFw63s3PuSxvUCJqqHKgYNVb8UTNcNiYHY8kng4NqT\
+        cVV5SA1KAWRzKHVGUxNWioAEXXVot5iJ1XbUWuuZUZBtsraaBjNyfmgWEDje3ESdGhiVL7vadU1uHeBuUKwM3nqB6y\
+        oeggeNyzmT34hs9utyehTFg48MAfrKEFKxaby7YZD6JbXFS1SyG1kxKWnCpoPgX3efwDwukmyDwxrKdABt9eTwmaiX\
+        KbTnK1hzBTatNfnJ9ePuWkhWFrjyDrGdx5S5KpybxET2vV9CSpExcD51BA6NPemTpjbhLYnJEzHWBGfYqfxu7p3257\
+        NHhpQQrSU56adk4dAQFjEYP
         """
 
-        XCTAssertEqual(output.encoded.hexString, expectedHexString)
+        XCTAssertEqual(output.encoded, expectedString)
     }
 
 }

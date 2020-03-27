@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -37,8 +37,8 @@ class HDWalletTests: XCTestCase {
         let key0 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 0)
         let key1 = wallet.getKeyBIP44(coin: .ethereum, account: 0, change: 0, address: 1)
 
-        XCTAssertEqual(EthereumAddress(publicKey: key0.getPublicKeySecp256k1(compressed: false)).description, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979")
-        XCTAssertEqual(EthereumAddress(publicKey: key1.getPublicKeySecp256k1(compressed: false)).description, "0x98f5438cDE3F0Ff6E11aE47236e93481899d1C47")
+        XCTAssertEqual(AnyAddress(publicKey: key0.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x27Ef5cDBe01777D62438AfFeb695e33fC2335979")
+        XCTAssertEqual(AnyAddress(publicKey: key1.getPublicKeySecp256k1(compressed: false), coin: .ethereum).description, "0x98f5438cDE3F0Ff6E11aE47236e93481899d1C47")
     }
 
     func testWanchain() {
@@ -146,9 +146,9 @@ class HDWalletTests: XCTestCase {
         let binance = CoinType.binance
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: binance)
-        let address = CosmosAddress(hrp: .binance, publicKey: key.getPublicKeySecp256k1(compressed: true))
+        let address = AnyAddress(publicKey: key.getPublicKeySecp256k1(compressed: true), coin: binance)
 
-        XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address?.description)
+        XCTAssertEqual("bnb1wk7kxw0qrvxe2pj9mk6ydjx0t4j9jla8pja0td", address.description)
     }
 
     func testDeriveZcash() {
@@ -189,7 +189,7 @@ class HDWalletTests: XCTestCase {
         let wallet = HDWallet.test
         let key = wallet.getKeyForCoin(coin: .tezos)
         let pubkey = key.getPublicKeyEd25519()
-        let address = TezosAddress(publicKey: pubkey)
+        let address = AnyAddress(publicKey: pubkey, coin: .tezos)
 
         XCTAssertEqual(pubkey.data.hexString, "c834147f97bcf95bf01f234455646a197f70b25e93089591ffde8122370ad371")
         XCTAssertEqual("tz1RsC3AREfrMwh6Hdu7qGKxBwb1VgwJv1qw", address.description)
@@ -379,5 +379,13 @@ class HDWalletTests: XCTestCase {
         let address = algo.deriveAddress(privateKey: key)
 
         XCTAssertEqual("VEFQ2IIW7CVKDLFEY53BMVJYKURC7KJTCW6U6R2CMQLQXZI52SCFSYASEY", address)
+    }
+
+    func testDeriveKava() {
+        let coin = CoinType.kava
+        let key = HDWallet.test.getKeyForCoin(coin: coin)
+        let address = coin.deriveAddress(privateKey: key)
+
+        XCTAssertEqual(address, "kava1zrst72upua78pylhku9csxd5zmhsyrk7xhrdlf")
     }
 }

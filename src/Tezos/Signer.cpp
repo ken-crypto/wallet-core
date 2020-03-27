@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -10,11 +10,35 @@
 #include "../HexCoding.h"
 
 #include <TrustWalletCore/TWCurve.h>
+#include <google/protobuf/util/json_util.h>
 
 #include <string>
 
 using namespace TW;
 using namespace TW::Tezos;
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto operationList = Tezos::OperationList(input.operation_list().branch());
+    for (Proto::Operation operation : input.operation_list().operations()) {
+      operationList.addOperation(operation);
+    }
+
+    auto signer = Signer();
+    PrivateKey key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    Data encoded = signer.signOperationList(key, operationList);
+
+    auto output = Proto::SigningOutput();
+    output.set_encoded(encoded.data(), encoded.size());
+    return output;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    auto output = Signer::sign(input);
+    return hex(output.encoded());
+}
 
 Data Signer::signOperationList(const PrivateKey& privateKey, const OperationList& operationList) {
     auto forged = operationList.forge(privateKey);

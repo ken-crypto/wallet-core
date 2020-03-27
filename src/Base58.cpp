@@ -1,5 +1,5 @@
 // Copyright © 2014-2018 The Bitcoin Core developers
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -65,7 +65,7 @@ Data Base58::decodeCheck(const char* begin, const char* end, Hash::Hasher hasher
     }
 
     // re-calculate the checksum, ensure it matches the included 4-byte checksum
-    auto hash = hasher(result.data(), result.data() + result.size() - 4);
+    auto hash = hasher(result.data(), result.size() - 4);
     if (!std::equal(hash.begin(), hash.begin() + 4, result.end() - 4)) {
         return {};
     }
@@ -142,7 +142,7 @@ Data Base58::decode(const char* begin, const char* end) const {
 std::string Base58::encodeCheck(const byte* begin, const byte* end, Hash::Hasher hasher) const {
     // add 4-byte hash check to the end
     Data dataWithCheck(begin, end);
-    auto hash = hasher(begin, end);
+    auto hash = hasher(begin, end - begin);
     dataWithCheck.insert(dataWithCheck.end(), hash.begin(), hash.begin() + 4);
     return encode(dataWithCheck);
 }

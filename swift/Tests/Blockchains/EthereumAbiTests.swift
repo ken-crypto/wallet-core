@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,7 +8,7 @@ import XCTest
 import TrustWalletCore
 
 class EthereumAbiTests: XCTestCase {
-    func testEncoder() {
+    func testAbiEncoder() {
         let function = EthereumAbiEncoder.buildFunction(name: "sam")!
         // add params
         XCTAssertEqual(0, function.addParamBytes(val: Data(hexString: "0x64617665")!, isOutput: false))
@@ -34,5 +34,10 @@ class EthereumAbiTests: XCTestCase {
         XCTAssertEqual(true, decodeRes)
         // new output value
         XCTAssertEqual(0x45, function.getParamUInt64(idx: 0, isOutput: true))
+    }
+
+    func testValueEncoder() {
+        let data2 = EthereumAbiValueEncoder.encodeInt32(value: 69)
+        XCTAssertEqual(data2.hexString, "0000000000000000000000000000000000000000000000000000000000000045")
     }
 }

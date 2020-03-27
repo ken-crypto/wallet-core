@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -14,7 +14,7 @@
 using namespace TW;
 using namespace TW::Solana;
 
-Data Transaction::serialize() const {
+std::string Transaction::serialize() const {
     Data buffer;
 
     append(buffer, shortVecLength<Signature>(this->signatures));
@@ -24,7 +24,7 @@ Data Transaction::serialize() const {
     }
     append(buffer, this->messageData());
 
-    return buffer;
+    return Base58::bitcoin.encode(buffer);
 }
 
 Data Transaction::messageData() const {
@@ -62,6 +62,6 @@ uint8_t Transaction::getAccountIndex(Address publicKey) {
     return (uint8_t)std::distance(this->message.accountKeys.begin(), item);
 }
 
-bool Signature::operator==(const Signature &v) const {
+bool Signature::operator==(const Signature& v) const {
     return bytes == v.bytes;
 }

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -51,6 +51,20 @@ TEST(RLP, uint256_t) {
         hex(RLP::encode(uint256_t("0x0100000000000000000000000000000000000000000000000000000000000000"))),
         "a00100000000000000000000000000000000000000000000000000000000000000"
     );
+}
+
+TEST(RLP, PutInt) {
+    EXPECT_EQ(hex(RLP::putint(0)), "00");
+    EXPECT_EQ(hex(RLP::putint(1)), "01");
+    EXPECT_EQ(hex(RLP::putint(0x21)), "21");
+    EXPECT_EQ(hex(RLP::putint(0x4321)), "4321");
+    EXPECT_EQ(hex(RLP::putint(0x654321)), "654321");
+    EXPECT_EQ(hex(RLP::putint(0x87654321)), "87654321");
+    EXPECT_EQ(hex(RLP::putint(0xa987654321)), "a987654321");
+    EXPECT_EQ(hex(RLP::putint(0xcba987654321)), "cba987654321");
+    EXPECT_EQ(hex(RLP::putint(0xedcba987654321)), "edcba987654321");
+    EXPECT_EQ(hex(RLP::putint(0x21edcba987654321)), "21edcba987654321");
+    EXPECT_EQ(hex(RLP::putint(0xffffffffffffffff)), "ffffffffffffffff");
 }
 
 TEST(RLP, Lists) {

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -45,7 +45,7 @@ TEST(AlgorandSigner, EncodeStrings) {
 
     for (auto &test : tests) {
         Data data;
-        encodeString(std::get<0>(test), data);
+        Algorand::encodeString(std::get<0>(test), data);
         ASSERT_EQ(hex(data), std::get<1>(test));
     }
 }

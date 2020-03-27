@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -6,8 +6,8 @@
 
 #pragma once
 
-#include "../proto/Binance.pb.h"
 #include "Data.h"
+#include "../proto/Binance.pb.h"
 
 #include <cstdint>
 
@@ -16,10 +16,15 @@ namespace TW::Binance {
 /// Helper class that performs Binance transaction signing.
 class Signer {
   public:
+    /// Signs a Proto::SigningInput transaction
+    static Proto::SigningOutput sign(const Proto::SigningInput& input) noexcept;
+    /// Signs a json Proto::SigningInput with private key
+    static std::string signJSON(const std::string& json, const Data& key);
+  public:
     Proto::SigningInput input;
 
     /// Initializes a transaction signer.
-    explicit Signer(Proto::SigningInput&& input) : input(input) {}
+    explicit Signer(const Proto::SigningInput& input) : input(input) {}
 
     /// Builds a signed transaction.
     ///
@@ -39,12 +44,7 @@ class Signer {
     TW::Data encodeOrder() const;
     TW::Data encodeSignature(const TW::Data& signature) const;
     TW::Data aminoWrap(const std::string& raw, const TW::Data& typePrefix,
-                                   bool isPrefixLength) const;
+                       bool isPrefixLength) const;
 };
 
 } // namespace TW::Binance
-
-/// Wrapper for C interface.
-struct TWBinanceSigner {
-    TW::Binance::Signer impl;
-};

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -28,7 +28,7 @@ class WavesTests: XCTestCase {
             $0.transferMessage = transferMessage
         }
 
-        let output = WavesSigner.sign(input: input)
+        let output: WavesSigningOutput = AnySigner.sign(input: input, coin: .waves)
         guard let json = try JSONSerialization.jsonObject(with: output.json.data(using: .utf8)!, options: []) as? [String: Any] else {
             XCTFail("unable to decode json")
             return

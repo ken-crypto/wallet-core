@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -8,12 +8,10 @@
 
 #include "Stellar/Address.h"
 #include "Stellar/Signer.h"
-#include "Bitcoin/Address.h"
 #include "HexCoding.h"
 #include "PrivateKey.h"
 #include <TrustWalletCore/TWHDWallet.h>
 #include <TrustWalletCore/TWStellarMemoType.h>
-#include <TrustWalletCore/TWHash.h>
 #include <TrustWalletCore/TWStellarPassphrase.h>
 #include "BinaryCoding.h"
 
