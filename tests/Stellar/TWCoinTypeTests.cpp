@@ -29,6 +29,6 @@ TEST(TWStellarCoinType, TWCoinType) {
     assertStringsEqual(symbol, "XLM");
     assertStringsEqual(txUrl, "https://stellarscan.io/transaction/t123");
     assertStringsEqual(accUrl, "https://stellarscan.io/account/a12");
-    assertStringsEqual(id, "stellar");
+    assertStringsEqual(id, "XLM");
     assertStringsEqual(name, "Stellar");
 }
