@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -36,18 +36,15 @@ class BitcoinTransactionSignerTests: XCTestCase {
         }
         input.utxo.append(utxo0)
 
-        let signer = BitcoinTransactionSigner(input: input)
-        let plan = signer.plan()
+        let plan: BitcoinTransactionPlan = AnySigner.plan(input: input, coin: .bitcoin)
 
         XCTAssertEqual(plan.amount, 1000)
         XCTAssertEqual(plan.fee, 226)
         XCTAssertEqual(plan.change, 0)
 
-        let result = signer.sign()
-        XCTAssertTrue(result.success, "Error signing: \(result.error)")
-        XCTAssertEqual(result.objects.count, 1)
+        let output: BitcoinSigningOutput = AnySigner.sign(input: input, coin: .bitcoin)
+        XCTAssertTrue(output.error.isEmpty)
 
-        let output = try BitcoinSigningOutput(unpackingAny: result.objects[0])
         let signedTx = output.transaction
         XCTAssertEqual(signedTx.version, 1)
 
@@ -73,6 +70,6 @@ class BitcoinTransactionSignerTests: XCTestCase {
                 "4730440220252e92b8757f1e5577c54ce5deb8072914c1f03333128777dee96ebceeb6a99b02202b7298789316779d0aa7595abeedc03054405c42ab9859e67d9253d2c9a0cdfa01232103596d3451025c" +
                 "19dbbdeb932d6bf8bfb4ad499b95b6f88db8899efac102e5fc71ac" +
             "00000000"
-        );
+        )
     }
 }

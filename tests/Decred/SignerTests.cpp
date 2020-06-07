@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,7 +13,7 @@
 #include "HexCoding.h"
 #include "PrivateKey.h"
 
-#include <TrustWalletCore/TWBitcoinOpCodes.h>
+#include <Bitcoin/OpCodes.h>
 #include <gtest/gtest.h>
 
 using namespace TW;
@@ -81,8 +81,8 @@ TEST(DecredSigner, Sign) {
     // Sign
     auto signer = Signer(std::move(input));
     signer.transaction = redeemTx;
-    signer.plan.utxos.push_back(*utxo0);
-    signer.plan.amount = 100'000'000;
+    signer.txPlan.utxos.push_back(*utxo0);
+    signer.txPlan.amount = 100'000'000;
     const auto result = signer.sign();
 
     ASSERT_TRUE(result);

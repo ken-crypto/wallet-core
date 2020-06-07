@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -106,7 +106,7 @@ class BitcoinAddressTests: XCTestCase {
             "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sL5k7",
             "bc1zw508d6qejxtdg4y5r3zarvaryvqyzf3du",
             "tb1qrp33g0q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3pjxtptv",
-            "bc1gmk9yu",
+            "bc1gmk9yu"
         ]
 
         for invalid in addresses {

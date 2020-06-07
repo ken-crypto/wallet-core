@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,6 +12,7 @@
 jbyteArray TWDataJByteArray(TWData *_Nonnull data, JNIEnv *env) {
     jbyteArray array = env->NewByteArray(TWDataSize(data));
     env->SetByteArrayRegion(array, 0, TWDataSize(data), (jbyte *) TWDataBytes(data));
+    TWDataDelete(data);
     return array;
 }
 

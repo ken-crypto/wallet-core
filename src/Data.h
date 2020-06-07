@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -35,6 +35,9 @@ inline void append(Data& data, const Data& suffix) {
 inline void append(Data& data, const byte suffix) {
     data.push_back(suffix);
 }
+
+/// Return a part (subdata) of the requested size of the input data.
+Data subData(const Data& data, size_t index, size_t length);
 
 /// Determines if a byte array has a specific prefix.
 template <typename T>

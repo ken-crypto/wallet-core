@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -24,7 +24,7 @@ static const std::string valid_checksum[] = {
 static const std::string invalid_checksum[] = {
     " 1nwldj5",
     "\x7f""1axkwrx",
-    "an84characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx",
+    "an124characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx0123456789012345678901234567890123456789",
     "pzry9x0s0muk",
     "1pzry9x0s0muk",
     "x1b4n0q5v",

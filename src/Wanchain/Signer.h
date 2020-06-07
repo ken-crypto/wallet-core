@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,13 +23,13 @@ namespace TW::Wanchain {
 /// Helper class that performs Wanchain transaction signing.
 class Signer {
   public:
+    /// Signs a Proto::SigningInput transaction
+    static Ethereum::Proto::SigningOutput sign(const Ethereum::Proto::SigningInput& input) noexcept;
+  public:
     boost::multiprecision::uint256_t chainID;
 
     /// Initializes a signer with a chain identifier.
     Signer(boost::multiprecision::uint256_t chainID) : chainID(std::move(chainID)) {}
-
-    /// Signs a Proto::SigningInput transaction
-    Ethereum::Proto::SigningOutput sign(const Ethereum::Proto::SigningInput &input) const noexcept;
 
     /// Signs the given transaction.
     void sign(const PrivateKey &privateKey, Ethereum::Transaction &transaction) const noexcept;
@@ -43,8 +43,3 @@ class Signer {
 };
 
 } // namespace TW::Wanchain
-
-/// Wrapper for C interface.
-struct TWWanchainSigner {
-    TW::Wanchain::Signer impl;
-};

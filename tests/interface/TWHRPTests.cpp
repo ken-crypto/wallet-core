@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,6 +26,8 @@ TEST(TWHRP, StringForHRP) {
     ASSERT_STREQ(stringForHRP(TWHRPViacoin), "via");
     ASSERT_STREQ(stringForHRP(TWHRPTerra), "terra");
     ASSERT_STREQ(stringForHRP(TWHRPMonacoin), "mona");
+    ASSERT_STREQ(stringForHRP(TWHRPKava), "kava");
+    ASSERT_STREQ(stringForHRP(TWHRPCardano), "addr");
 }
 
 TEST(TWHRP, HRPForString) {
@@ -43,6 +45,8 @@ TEST(TWHRP, HRPForString) {
     ASSERT_EQ(hrpForString("via"), TWHRPViacoin);
     ASSERT_EQ(hrpForString("terra"), TWHRPTerra);
     ASSERT_EQ(hrpForString("mona"), TWHRPMonacoin);
+    ASSERT_EQ(hrpForString("kava"), TWHRPKava);
+    ASSERT_EQ(hrpForString("addr"), TWHRPCardano);
 }
 
 TEST(TWHPR, HPRByCoinType) {
@@ -59,9 +63,10 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPZilliqa, TWCoinTypeHRP(TWCoinTypeZilliqa));
     ASSERT_EQ(TWHRPTerra, TWCoinTypeHRP(TWCoinTypeTerra));
     ASSERT_EQ(TWHRPMonacoin, TWCoinTypeHRP(TWCoinTypeMonacoin));
+    ASSERT_EQ(TWHRPKava, TWCoinTypeHRP(TWCoinTypeKava));
+    ASSERT_EQ(TWHRPCardano, TWCoinTypeHRP(TWCoinTypeCardano));
 
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeAion));
-    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeBravoCoin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeCallisto));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeDecred));
@@ -92,4 +97,5 @@ TEST(TWHPR, HPRByCoinType) {
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeZelcash));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeRavencoin));
     ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeWaves));
+    ASSERT_EQ(TWHRPUnknown, TWCoinTypeHRP(TWCoinTypeNEO));
 }

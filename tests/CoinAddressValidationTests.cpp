@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,6 +27,8 @@ TEST(Coin, ValidateAddressZilliqa) {
 TEST(Coin, ValidateAddressEthereum) {
     EXPECT_TRUE(validateAddress(TWCoinTypeEthereum, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89"));
     EXPECT_FALSE(validateAddress(TWCoinTypeEthereum, "ede8f58dada22a49db60d4f82bad428ab65f89"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeEthereum, "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1"), "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1");
 }
 
 TEST(Coin, validateAddressBitcoin) {
@@ -36,6 +38,9 @@ TEST(Coin, validateAddressBitcoin) {
 
     EXPECT_FALSE(validateAddress(TWCoinTypeBitcoin, "bc1q2ddhp55sq2l4xnqhpdv9xazg02v9dr7uu8c2p2"));
     EXPECT_FALSE(validateAddress(TWCoinTypeBitcoin, "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoin, "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy"), "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy");
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoin, "MPmoY6RX3Y3HFjGEnFxyuLPCQdjvHwMEny"), "");
 }
 
 TEST(Coin, ValidateAddressBinance) {
@@ -62,6 +67,9 @@ TEST(Coin, ValidateAddressBitcoinCash) {
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "qq07l6rr5lsdm3m80qxw80ku2ex0tj76vvsxpvmgme"));
     EXPECT_TRUE(validateAddress(TWCoinTypeBitcoinCash, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoinCash, "qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4"), "bitcoincash:qqslmu0jxk4st3ldjyuazfpf5thd6vlgfuggqd3re4");
+    ASSERT_EQ(normalizeAddress(TWCoinTypeBitcoinCash, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"), "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2");
 }
 
 TEST(Coin, ValidateAddressDogecoin) {
@@ -129,13 +137,6 @@ TEST(Coin, validateAddressQtum) {
     EXPECT_FALSE(validateAddress(TWCoinTypeQtum, "qc2qn9gjawre2t6xmcv5gyqkujqhd8cfvvyx0rx2mp"));
 }
 
-TEST(Coin, ValidateAddressBravo) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeBravoCoin, "BRV5LZBF18uucMKVyKMQ7r6qnXBWn9StM5AJYHs1kidPeyNexuBUm"));
-    EXPECT_TRUE(validateAddress(TWCoinTypeBravoCoin, "TST4yPnD1zXSqyK4LFHkt1d5m5LZq2oaMFGYjosVXURUfqaUAXTKQ"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeBravoCoin, "5LZBF18uucMKVyKMQ7r6qnXBWn9StM5AJYHs1kidPeyNexuBUm"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeBravoCoin, "TST4yPnD1zXSqyK4LFHkt1d5m5LZq2oaMFGYjosVXURUfqaUAXTK"));
-}
-
 TEST(Coin, ValidateAddressEOS) {
     EXPECT_TRUE(validateAddress(TWCoinTypeEOS, "EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjTF"));
     EXPECT_TRUE(validateAddress(TWCoinTypeEOS, "PUB_R1_5hieQEFWh68h6bjaYAY25Ptd2bmqLCaFsunaneh9gZsmSgUBUe"));
@@ -170,6 +171,8 @@ TEST(Coin, ValidateAddressDGB){
 TEST(Coin, validateAddressWanchain) {
     EXPECT_TRUE(validateAddress(TWCoinTypeWanchain, "0x9D8a62F656A8D1615c1294FD71E9cfB3e4855a4f"));
     EXPECT_FALSE(validateAddress(TWCoinTypeWanchain, "xx9D8a62F656A8D1615c1294FD71E9cfB3e4855a4f"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeWanchain, "0xb08f432a3346e90e2ab61830ec227043131f70ff"), "0xb08f432A3346E90e2AB61830Ec227043131f70Ff");
 }
 
 TEST(Coin, validateAddressICON) {
@@ -309,6 +312,65 @@ TEST(Coin, validateAddressAlgorand) {
 
     EXPECT_FALSE(validateAddress(TWCoinTypeAlgorand, "NQ74 D40G N3M0 9EJD ET56 UPLR 02VC X6DU 8G1E"));
     EXPECT_FALSE(validateAddress(TWCoinTypeAlgorand, "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"));
+}
+
+TEST(Coin, ValidateAddresKavaa) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeKava, "kava1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z09wt76x"));
+    // wrong prefix
+    EXPECT_FALSE(validateAddress(TWCoinTypeKava, "cosmos1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0emlrvp"));
+    // wrong checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeKava, "kava1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z09wt000"));
+}
+
+TEST(Coin, ValidateAddresCardano) {
+    // valid V3 address
+    EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "addr1s3hdtrqgs47l7ue5srga8wmk9dzw279x9e7lxadalt6z0fk64nnn2mgtn87mrny9r77gm09h6ecslh3gmarrvrp9n4yzmdnecfxyu59j5lempe"));
+    // valid V2 address
+    EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "Ae2tdPwUPEZ6RUCnjGHFqi59k5WZLiv3HoCCNGCW8SYc5H9srdTzn1bec4W"));
+    // valid V1 address
+    EXPECT_TRUE(validateAddress(TWCoinTypeCardano, "DdzFFzCqrhssmYoG5Eca1bKZFdGS8d6iag1mU4wbLeYcSPVvBNF2wRG8yhjzQqErbg63N6KJA4DHqha113tjKDpGEwS5x1dT2KfLSbSJ"));
+    // invalid checksum
+    EXPECT_FALSE(validateAddress(TWCoinTypeCardano, "Ae2tdPwUPEZ18ZjTLnLVr9CEvUEUX4eW1LBHbxxxJgxdAYHrDeSCSbCxrvm"));
+    // random
+    EXPECT_FALSE(validateAddress(TWCoinTypeCardano, "hasoiusaodiuhsaijnnsajnsaiussai"));
+}
+
+TEST(Coin, ValidateAddressNEO) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeNEO, "ANDfjwrUroaVtvBguDtrWKRMyxFwvVwnZD"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeNEO, "hasoiusaodiuhsaijnnsajnsaiussai"));
+}
+
+TEST(Coin, ValidateAddressFilecoin) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeFilecoin, "f15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7pdrq"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeFilecoin, "a15ihq5ibzwki2b4ep2f46avlkrqzhpqgtga7pdrq"));
+}
+
+TEST(Coin, ValidateAddressHarmony) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeHarmony, "one1a50tun737ulcvwy0yvve0pvu5skq0kjargvhwe"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeHarmony, "oe1tp7xdd9ewwnmyvws96au0ee7e7mz6f8hjqr3g3p"));
+}
+
+TEST(Coin, ValidateAddressNEAR) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeNEAR, "NEAR2758Nk7CMUcxTwXdjVdSxNEidiZQWMZN3USJzj76q5ia3v2v2v"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeNEAR, "EOS65QzSGJ579GPNKtZoZkChTzsxR4B48RCfiS82m2ymJR6VZCjT"));
+}
+
+TEST(Coin, ValidateAddressSolana) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeSolana, "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeSolana, "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpd"));
+}
+
+TEST(Coin, ValidateAddressTheta) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeTheta, "0xeDe8F58dADa22c3A49dB60D4f82BAD428ab65F89"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeTheta, "ede8f58dada22a49db60d4f82bad428ab65f89"));
+
+    ASSERT_EQ(normalizeAddress(TWCoinTypeTheta, "0x7d8bf18c7ce84b3e175b339c4ca93aed1dd166f1"), "0x7d8bf18C7cE84b3E175b339c4Ca93aEd1dD166F1");
+}
+
+TEST(Coin, ValidateAddressVeChain) {
+    EXPECT_TRUE(validateAddress(TWCoinTypeVeChain, "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F"));
+
+    EXPECT_EQ(normalizeAddress(TWCoinTypeVeChain, "0x9d8a62f656a8d1615c1294fd71e9cfb3e4855a4f"), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
 }
 
 } // namespace TW

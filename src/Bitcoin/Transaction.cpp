@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,7 +9,7 @@
 #include "../BinaryCoding.h"
 #include "../Hash.h"
 
-#include <TrustWalletCore/TWBitcoin.h>
+#include "SignatureVersion.h"
 
 #include <cassert>
 
@@ -130,7 +130,7 @@ void Transaction::encode(bool witness, std::vector<uint8_t>& data) const {
 
 std::vector<uint8_t> Transaction::getSignatureHash(const Script& scriptCode, size_t index,
                                                    enum TWBitcoinSigHashType hashType, uint64_t amount,
-                                                   TWBitcoinSignatureVersion version) const {
+                                                   enum SignatureVersion version) const {
     switch (version) {
     case BASE:
         return getSignatureHashBase(scriptCode, index, hashType);

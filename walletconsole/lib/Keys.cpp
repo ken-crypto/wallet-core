@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -26,12 +26,27 @@ Keys::Keys(ostream& out, const Coins& coins) : _out(out), _coins(coins) {
     _currentMnemonic = newwall.mnemonic;
 }
 
-bool Keys::newKey(string& res) {
+void privateKeyToResult(const PrivateKey& priKey, string& res_out) {
+    // take the key, but may need to take extension as well
+    res_out = hex(priKey.bytes);
+    if (priKey.extensionBytes.size() > 0) {
+        res_out += hex(priKey.extensionBytes);
+        res_out += hex(priKey.chainCodeBytes);
+    }
+}
+
+bool Keys::newKey(const string& coinid, string& res) {
     // Create a new private key by creating a new HDWallet and deriving from it
+    // Use coin-specific derivation path, so that PK can be coin-specific (e.g. longer for Cardano)
+    // coin
+    Coin coin;
+    if (!_coins.findCoin(coinid, coin)) { return false; }
+
     HDWallet newWallet(256, "");
-    DerivationPath dummyDerivation("m/84'/0'/0'/0/0");
-    PrivateKey key = newWallet.getKey(dummyDerivation);
-    res = hex(key.bytes);
+
+    DerivationPath derivationPath = DerivationPath(coin.derivPath);
+    PrivateKey key = newWallet.getKey(derivationPath);
+    privateKeyToResult(key, res);
     return true;
 }
 
@@ -41,14 +56,15 @@ bool Keys::pubPri(const string& coinid, const string& p, string& res) {
     Data privDat;
     try {
         privDat = parse_hex(p);
+        auto priv = PrivateKey(privDat);
+        auto pub = priv.getPublicKey((TWPublicKeyType)coin.pubKeyType);
+        res = hex(pub.bytes);
+        _out << "Public key created, type " << (int)coin.pubKeyType << ", length " << pub.bytes.size() << endl;
+        return true;
     } catch (exception& ex) {
-        _out << "Error: could not parse private key data" << endl;
+        _out << "Error: " << ex.what() << endl;
         return false; 
     }
-    auto priv = PrivateKey(privDat);
-    auto pub = priv.getPublicKey((TWPublicKeyType)coin.pubKeyType);
-    res = hex(pub.bytes);
-    return true;
 }
 
 bool Keys::priPub(const string& p, string& res) {
@@ -98,10 +114,7 @@ bool Keys::newMnemonic(const string& param1, string& res) {
 }
 
 bool Keys::dumpSeed(string& res) {
-    if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
-        return false;
-    }
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
     HDWallet wallet(_currentMnemonic, "");
     string seedHex = hex(wallet.seed);
     res = seedHex;
@@ -109,10 +122,7 @@ bool Keys::dumpSeed(string& res) {
 }
 
 bool Keys::dumpMnemonic(string& res) {
-    if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
-        return false;
-    }
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
     res = _currentMnemonic;
     return true;
 }
@@ -130,10 +140,7 @@ bool Keys::priDP(const string& coinid, const string& dp, string& res) {
     if (!_coins.findCoin(coinid, coin)) { return false; }
 
     // mnemo
-    if (_currentMnemonic.length() == 0) {
-        _out << "Error: no mnemonic set.  Use setMnemonic." << endl;
-        return false;
-    }
+    assert(_currentMnemonic.length() > 0); // a mnemonic is always set
 
     // derivation path
     string dp2 = dp;
@@ -147,7 +154,7 @@ bool Keys::priDP(const string& coinid, const string& dp, string& res) {
     HDWallet wallet(_currentMnemonic, "");
     PrivateKey priKey = wallet.getKey(dp3);
 
-    res = hex(priKey.bytes);
+    privateKeyToResult(priKey, res);
     return true;
 }
 

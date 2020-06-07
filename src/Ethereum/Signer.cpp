@@ -1,13 +1,47 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
 // file LICENSE at the root of the source code distribution tree.
 
 #include "Signer.h"
+#include "HexCoding.h"
+#include <google/protobuf/util/json_util.h>
 
 using namespace TW;
 using namespace TW::Ethereum;
+
+Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
+    auto signer = Signer(load(input.chain_id()));
+    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
+    auto transaction = Signer::build(input);
+
+    signer.sign(key, transaction);
+
+    auto output = Proto::SigningOutput();
+
+    auto encoded = RLP::encode(transaction);
+    output.set_encoded(encoded.data(), encoded.size());
+
+    auto v = store(transaction.v);
+    output.set_v(v.data(), v.size());
+
+    auto r = store(transaction.r);
+    output.set_r(r.data(), r.size());
+
+    auto s = store(transaction.s);
+    output.set_s(s.data(), s.size());
+
+    return output;
+}
+
+std::string Signer::signJSON(const std::string& json, const Data& key) {
+    auto input = Proto::SigningInput();
+    google::protobuf::util::JsonStringToMessage(json, &input);
+    input.set_private_key(key.data(), key.size());
+    auto output = Signer::sign(input);
+    return hex(output.encoded());
+}
 
 std::tuple<uint256_t, uint256_t, uint256_t> Signer::values(const uint256_t &chainID,
                                                            const Data &signature) noexcept {
@@ -48,29 +82,6 @@ Transaction Signer::build(const Proto::SigningInput &input) {
         /* amount: */ load(input.amount()),
         /* payload: */ Data(input.payload().begin(), input.payload().end()));
     return transaction;
-}
-
-Proto::SigningOutput Signer::sign(const Proto::SigningInput &input) const noexcept {
-    auto key = PrivateKey(Data(input.private_key().begin(), input.private_key().end()));
-    auto transaction = Signer::build(input);
-
-    sign(key, transaction);
-
-    auto protoOutput = Proto::SigningOutput();
-
-    auto encoded = RLP::encode(transaction);
-    protoOutput.set_encoded(encoded.data(), encoded.size());
-
-    auto v = store(transaction.v);
-    protoOutput.set_v(v.data(), v.size());
-
-    auto r = store(transaction.r);
-    protoOutput.set_r(r.data(), r.size());
-
-    auto s = store(transaction.s);
-    protoOutput.set_s(s.data(), s.size());
-
-    return protoOutput;
 }
 
 void Signer::sign(const PrivateKey &privateKey, Transaction &transaction) const noexcept {

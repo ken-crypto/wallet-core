@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -29,6 +29,6 @@ TEST(TWEthereumCoinType, TWCoinType) {
     assertStringsEqual(symbol, "ETH");
     assertStringsEqual(txUrl, "https://etherscan.io/tx/0x9edaf0f7d9c6629c31bbf0471fc07d696c73b566b93783f7e25d8d5d2b62fa4f");
     assertStringsEqual(accUrl, "https://etherscan.io/address/0x5bb497e8d9fe26e92dd1be01e32076c8e024d167");
-    assertStringsEqual(id, "ethereum");
+    assertStringsEqual(id, "ETH");
     assertStringsEqual(name, "Ethereum");
 }

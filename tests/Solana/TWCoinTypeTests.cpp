@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,7 +12,6 @@
 #include <TrustWalletCore/TWCoinTypeConfiguration.h>
 #include <gtest/gtest.h>
 
-
 TEST(TWSolanaCoinType, TWCoinType) {
     auto symbol = WRAPS(TWCoinTypeConfigurationGetSymbol(TWCoinTypeSolana));
     auto txId = TWStringCreateWithUTF8Bytes("t123");
@@ -22,7 +21,7 @@ TEST(TWSolanaCoinType, TWCoinType) {
     auto id = WRAPS(TWCoinTypeConfigurationGetID(TWCoinTypeSolana));
     auto name = WRAPS(TWCoinTypeConfigurationGetName(TWCoinTypeSolana));
 
-    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 13);
+    ASSERT_EQ(TWCoinTypeConfigurationGetDecimals(TWCoinTypeSolana), 9);
     ASSERT_EQ(TWBlockchainSolana, TWCoinTypeBlockchain(TWCoinTypeSolana));
     ASSERT_EQ(0x0, TWCoinTypeP2shPrefix(TWCoinTypeSolana));
     ASSERT_EQ(0x0, TWCoinTypeStaticPrefix(TWCoinTypeSolana));

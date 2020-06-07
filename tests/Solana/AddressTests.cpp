@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -13,6 +13,14 @@
 using namespace std;
 using namespace TW;
 using namespace TW::Solana;
+
+TEST(SolanaAddress, addressFromValidatorSeed) {
+    auto user = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    auto validator = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto programId = Address("Stake11111111111111111111111111111111111111");
+    auto expected = Address("6u9vJH9pRj66N5oJFCBADEbpMTrLxQATcL6q5p5MXwYv");
+    ASSERT_EQ(addressFromValidatorSeed(user, validator, programId), expected);
+}
 
 TEST(SolanaAddress, FromPublicKey) {
     const auto addressString = "2gVkYWexTHR5Hb2aLeQN3tnngvWzisFKXDUPrgMHpdST";

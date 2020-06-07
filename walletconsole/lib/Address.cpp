@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -70,10 +70,7 @@ bool Address::addrDefault(const string& coinid, string& res) {
     if (!_coins.findCoin(coinid, coin)) { return false; }
     TWCoinType ctype = (TWCoinType)coin.c;
     string mnemo = _keys.getMnemo();
-    if (mnemo.length() == 0) {
-        _out << "Error: no mnemonic set." << endl;
-        return false;
-    }
+    assert(mnemo.length() > 0); // a mnemonic is always set
     HDWallet wallet(mnemo, "");
 
     string addr = wallet.deriveAddress(ctype);
@@ -86,10 +83,7 @@ bool Address::addrDP(const string& coinid, const string& derivPath, string& res)
     DerivationPath dp(derivPath);
     // get the private key
     string mnemo = _keys.getMnemo();
-    if (mnemo.length() == 0) {
-        _out << "Error: no mnemonic set." << endl;
-        return false;
-    }
+    assert(mnemo.length() > 0); // a mnemonic is always set
     HDWallet wallet(mnemo, "");
     PrivateKey priKey = wallet.getKey(dp);
 

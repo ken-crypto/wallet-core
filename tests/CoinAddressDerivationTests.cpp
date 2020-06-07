@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -12,7 +12,9 @@
 namespace TW {
 
 TEST(Coin, DeriveAddress) {
-    const auto privateKey = PrivateKey(parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646"));
+    auto dummyKeyData = parse_hex("0x4646464646464646464646464646464646464646464646464646464646464646");
+    const auto privateKey = PrivateKey(dummyKeyData);
+    const auto privateKeyExt = PrivateKey(dummyKeyData, dummyKeyData, dummyKeyData);
     
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeAion, privateKey), "0xa0010b0ea04ba4d76ca6e5e9900bacf19bc4402eaec7e36ea7ddd8eed48f60f3");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeBinance, privateKey), "bnb1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z0mlq0d0");
@@ -49,7 +51,6 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeTheta, privateKey), "0x9d8A62f656a8d1615C1294fd71e9CFb3E4855A4F");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeQtum, privateKey), "QdtLm8ccxhuJFF5zCgikpaghbM3thdaGsW");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeNULS, privateKey), "NULSd6HgfXT3m5JBGxeCZXHRQbb82FKgZGT8o");
-    EXPECT_EQ(TW::deriveAddress(TWCoinTypeBravoCoin, privateKey), "BRV5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeEOS, privateKey), "EOS5TrYnZP1RkDSUMzBY4GanCy6AP68kCMdkAb5EACkAwkdgRLShz");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeIoTeX, privateKey), "io1nk9x9ajk4rgkzhqjjn7hr6w0k0jg2kj0zgdt6h");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeDogecoin, privateKey), "DNRTC6GZ5evmM7BZWwPqF54fyDqUqULMyu");
@@ -64,6 +65,12 @@ TEST(Coin, DeriveAddress) {
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeTON, privateKey), "EQDww_SOMx3CT30jzaDPDuWkGaHjo8zQULH75spBGszlINDK");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypeKusama, privateKey), "Hy8mqcexg5FMwMYnQvzrUvD723qMxDjMRU9HdNCnTsMAypY");
     EXPECT_EQ(TW::deriveAddress(TWCoinTypePolkadot, privateKey), "16PpFrXrC6Ko3pYcyMAx6gPMp3mFFaxgyYMt4G5brkgNcSz8");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeKava, privateKey), "kava1hkfq3zahaqkkzx5mjnamwjsfpq2jk7z09wt76x");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeCardano, privateKeyExt), "addr1sn0sqpku8yfj2dazh7czyspcd5flzkzu6x9wqt0lsn4wfvds9sg3s3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxgeryv3jxdnpy03");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEO, privateKeyExt), "AeicEjZyiXKgUeSBbYQHxsU1X3V5Buori5");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeFilecoin, privateKey), "f1qsx7qwiojh5duxbxhbqgnlyx5hmpcf7mcz5oxsy");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeNEAR, privateKey), "NEAR2p5878zbFhxnrm7meL7TmqwtvBaqcBddyp5eGzZbovZ5HYrdGj");
+    EXPECT_EQ(TW::deriveAddress(TWCoinTypeSolana, privateKey), "H4JcMPicKkHcxxDjkyyrLoQj7Kcibd9t815ak4UvTr9M");
 }
 
 } // namespace TW

@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -27,8 +27,8 @@ enum TWCoinType {
     TWCoinTypeBinance = 714,
     TWCoinTypeBitcoin = 0,
     TWCoinTypeBitcoinCash = 145,
-    TWCoinTypeBravoCoin = 282,
     TWCoinTypeCallisto = 820,
+    TWCoinTypeCardano = 1815, // Note: Cardano Shelley testnet uses purpose 1852 (not 44) 1852/1815
     TWCoinTypeCosmos = 118,
     TWCoinTypeDash = 5,
     TWCoinTypeDecred = 42,
@@ -42,6 +42,7 @@ enum TWCoinType {
     TWCoinTypeGroestlcoin = 17,
     TWCoinTypeICON = 74,
     TWCoinTypeIoTeX = 304,
+    TWCoinTypeKava = 459,
     TWCoinTypeKin = 2017,
     TWCoinTypeLitecoin = 2,
     TWCoinTypeMonacoin = 22,
@@ -60,6 +61,7 @@ enum TWCoinType {
     TWCoinTypeTezos = 1729,
     TWCoinTypeTheta = 500,
     TWCoinTypeThunderToken = 1001,
+    TWCoinTypeNEO = 888,
     TWCoinTypeTomoChain = 889,
     TWCoinTypeTron = 195,
     TWCoinTypeVeChain = 818,
@@ -76,6 +78,7 @@ enum TWCoinType {
     TWCoinTypeAlgorand = 283,
     TWCoinTypeKusama = 434,
     TWCoinTypePolkadot = 354,
+    TWCoinTypeFilecoin = 461,
 };
 
 /// Returns the blockchain for a coin type.

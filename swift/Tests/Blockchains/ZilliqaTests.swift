@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,20 +23,16 @@ class ZilliqaTests: XCTestCase {
     func testAddress() {
         let data = Data(hexString: "029d25b68a18442590e113132a34bb524695c4291d2c49abf2e4cdd7d98db862c3")!
         let pubKey = PublicKey(data: data, type: .secp256k1)!
-        let keyHash = "0x7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C"
-        let address = ZilliqaAddress(publicKey: pubKey)
-        let address2 = ZilliqaAddress(string: "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz")!
-        let address3 = ZilliqaAddress(keyHash: Data(hexString: keyHash)!)!
+        let keyHash = "7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C"
+        let address = AnyAddress(publicKey: pubKey, coin: .zilliqa)
+        let address2 = AnyAddress(string: "zil10lx2eurx5hexaca0lshdr75czr025cevqu83uz", coin: .zilliqa)!
 
-        XCTAssertEqual(address.keyHash, keyHash)
+        XCTAssertEqual(String(data: address.data, encoding: .utf8)!, keyHash)
         XCTAssertEqual(address.description, address2.description)
-        XCTAssertEqual(address.description, address3.description)
     }
 
     func testSigner() {
-
         let privateKey = PrivateKey(data: Data(hexString: "0x68ffa8ec149ce50da647166036555f73d57f662eb420e154621e5f24f6cf9748")!)!
-
         // 1 ZIL
         let input = ZilliqaSigningInput.with {
             $0.version = 65537 // mainnet tx version
@@ -48,8 +44,22 @@ class ZilliqaTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let signature = ZilliqaSigner.sign(input: input).signature
-
-        XCTAssertEqual(signature.hexString, "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268")
+        let output: ZilliqaSigningOutput = AnySigner.sign(input: input, coin: .zilliqa)
+        let expectedJSON = """
+{
+    "amount": "1000000000000",
+    "toAddr": "7FCcaCf066a5F26Ee3AFfc2ED1FA9810Deaa632C",
+    "pubKey": "03fb30b196ce3e976593ecc2da220dca9cdea8c84d2373770042a930b892ac0f5c",
+    "data": "",
+    "code": "",
+    "signature": "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268",
+    "gasLimit": "1",
+    "version": 65537,
+    "gasPrice": "1000000000",
+    "nonce": 2
+}
+"""
+        XCTAssertEqual(output.signature.hexString, "001fa4df08c11a4a79e96e69399ee48eeecc78231a78b0355a8ca783c77c139436e37934fecc2252ed8dac00e235e22d18410461fb896685c4270642738ed268")
+        XCTAssertJSONEqual(output.json, expectedJSON)
     }
 }

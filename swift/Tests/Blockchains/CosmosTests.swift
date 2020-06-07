@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -28,10 +28,10 @@ class CosmosSignerTests: XCTestCase {
 
     func testSigningTransaction() {
         let publicKey = privateKey.getPublicKeySecp256k1(compressed: true)
-        let fromAddress = CosmosAddress(hrp: .cosmos, publicKey: publicKey)!.description
+        let fromAddress = AnyAddress(publicKey: publicKey, coin: .cosmos)
 
         let sendCoinsMessage = CosmosMessage.Send.with {
-            $0.fromAddress = fromAddress
+            $0.fromAddress = fromAddress.description
             $0.toAddress = "cosmos1zt50azupanqlfam5afhv3hexwyutnukeh4c573"
             $0.amounts = [CosmosAmount.with {
                 $0.amount = 1
@@ -51,7 +51,7 @@ class CosmosSignerTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 1037
             $0.chainID = "gaia-13003"
             $0.memo = ""
@@ -61,7 +61,7 @@ class CosmosSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
         let expectedJSON: String =
 """
@@ -101,13 +101,12 @@ class CosmosSignerTests: XCTestCase {
         },
         "signature": "/D74mdIGyIB3/sQvIboLTfS9P9EV/fYGrgHZE2/vNj9X6eM6e57G3atljNB+PABnRw3pTk51uXmhCFop8O/ZJg=="
       }
-    ],
-    "type": "cosmos-sdk/MsgSend"
+    ]
   }
 }
 """
 
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testStaking() {
@@ -132,7 +131,7 @@ class CosmosSignerTests: XCTestCase {
             }]
         }
 
-        let signingInput = CosmosSigningInput.with {
+        let input = CosmosSigningInput.with {
             $0.accountNumber = 1037
             $0.chainID = "gaia-13003"
             $0.memo = ""
@@ -142,7 +141,7 @@ class CosmosSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: signingInput)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
 
         let expectedJSON = """
 {
@@ -179,13 +178,12 @@ class CosmosSignerTests: XCTestCase {
         },
         "signature": "wIvfbCsLRCjzeXXoXTKfHLGXRbAAmUp0O134HVfVc6pfdVNJvvzISMHRUHgYcjsSiFlLyR32heia/yLgMDtIYQ=="
       }
-    ],
-    "type": "cosmos-sdk/MsgSend"
+    ]
   }
 }
 
 """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 
     func testWithdraw() {
@@ -226,7 +224,8 @@ class CosmosSignerTests: XCTestCase {
             $0.privateKey = privateKey.data
         }
 
-        let output = CosmosSigner.sign(input: input)
+        let output: CosmosSigningOutput = AnySigner.sign(input: input, coin: .cosmos)
+
         let expectedJSON = """
         {
           "mode": "block",
@@ -270,18 +269,11 @@ class CosmosSignerTests: XCTestCase {
                 },
                 "signature": "2k5bSnfWxaauXHBNJTKmf4CpLiCWLg7UAC/q2SVhZNkU+n0DdLBSTdmYhKYmmtpl/Njm4YrcxE0WLb/hVccQ+g=="
               }
-            ],
-            "type": "cosmos-sdk/MsgSend"
+            ]
           }
         }
 
         """
-        XCTAssertEqual(expectedJSON.flatten(), output.json)
-    }
-}
-
-extension String {
-    func flatten() -> String {
-        return components(separatedBy: .whitespacesAndNewlines).joined()
+        XCTAssertJSONEqual(expectedJSON, output.json)
     }
 }

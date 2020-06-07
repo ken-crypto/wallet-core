@@ -1,4 +1,4 @@
-// Copyright © 2017-2019 Trust Wallet.
+// Copyright © 2017-2020 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -23,7 +23,7 @@ TEST(SolanaTransaction, TransferMessageData) {
     auto transaction = Transaction(from, to, 42, recentBlockhash);
 
     auto expectedHex =
-        "0100020353f9d600fe925083bb399907ea648d23a6a081fc7e9059202fd725f7edd281dd3cc1ff9ba3c7a876c8"
+        "0100010353f9d600fe925083bb399907ea648d23a6a081fc7e9059202fd725f7edd281dd3cc1ff9ba3c7a876c8"
         "082df2f8a36ea9342ce3819dd4b6fa72d4a18e04a5363a00000000000000000000000000000000000000000000"
         "000000000000000000000000000000000000000000000000000000000000000000000000000000000000010202"
         "00010c020000002a00000000000000";
@@ -31,50 +31,46 @@ TEST(SolanaTransaction, TransferMessageData) {
 }
 
 TEST(SolanaTransaction, TransferSerializeTransaction) {
-    auto from = Address("C9oZKzj7ajgu9vgV1evHrwrN6Yw22LtpwXEKoS4omZoi");
-    auto to = Address("DvCpXoxoSAyoUgHWEe8M6LaD225798tYgFE7T3r4Z2iu");
+    auto from = Address("41a5jYky56M6EWDsFfLaZRxoRtgAJSRWxJnxaJNJELn5");
+    auto to = Address("4iSnyfDKaejniaPc2pBBckwQqV3mDS93go15NdxWJq2y");
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
     auto transaction = Transaction(from, to, 42, recentBlockhash);
     Signature signature(
-        "5KZjkbW2KD1rViggHNoU4YqBVhfmpBY6YY5obM9qjSfC5QH1uFWUEbWgUPtrREEdyP3LLEjjrd1XhXVTSk34ma4d");
+        "46SRiQGvtPb1iivDfnuC3dW1GzXkfQPTjdUyvFqF2sdPvFrsfx94fys2xpNKR6UiAj7RgKWdJG6mEfe85up6i1JT");
     transaction.signatures.clear();
     transaction.signatures.push_back(signature);
 
-    auto expectedHex =
-        "01d813c70630e70f8a57a47f4bf63cf3eb0e43b9f2daa43bd4dfcbefd562dddd06d8dc37ad7bd941edd2c5c91f"
-        "e94d92ed6a91a39cecf231f007ea4ff0c358c10601000203a5b1d862445be46611868cd435ab63c9d5dbb403c2"
-        "918ac7f24c4180d70c02f5bfed63ee22636b105131aba9ad2667a9fe345edbff08cdc22fa3fab6e20fdbf20000"
-        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "000000000000000000000000000000000001020200010c020000002a00000000000000";
-    ASSERT_EQ(hex(transaction.serialize()), expectedHex);
+    auto expectedString =
+        "5SiHeYyuDgjHxWHbYXSSPfmYc8s7EYZ8bdZ7j15z9Bj1yyZA3Bia9uWkRdXVkuqifXiiQj6fVKy"
+        "7UkCL5kvv6iKrfjWTZ3szMVssTFxgJ7p8UJ7Mgg2uhHejVJvbzbiHHLbNVuJFs6kBxddnJ2yjWU"
+        "Cp2dYJgjmphfA8hRHHdPH4Rv6znxEhD8q9XY4nByRPL7oMCo32oxeJn5rGbUZdCkapRUXG7zU9w"
+        "hv6KjBktcUQZRCahhowGJT4UM5yCNCsUcqY9yan7UxqPyJgaFPuq4duqWJtQ39bTQ36X";
+    ASSERT_EQ(transaction.serialize(), expectedString);
 }
 
 TEST(SolanaTransaction, StakeSerializeTransaction) {
-    auto from = Address("CpKHKhhrfA3HWm1Tc7Nm8MWLvypXwrorHQGPpuygcmYP");
-    auto stakeAccount = Address("5xVakzurz4ZVYcZSMYaP2kDaLRx7JekXKRp1XY3TrYyY");
-    auto voteAccount = Address("FkL2bzbUbp3J9MQEX3toMBA4q8ZcHcjeacdtn2Ti8Qec");
+    auto signer = Address("zVSpQnbBZ7dyUWzXhrUQRsTYYNzoAdJWHsHSqhPj3Xu");
+    auto voteAddress = Address("4jpwTqt1qZoR7u6u639z2AngYFGN3nakvKhowcnRZDEC");
+    auto programId = Address(STAKE_ADDRESS);
     Solana::Hash recentBlockhash("11111111111111111111111111111111");
-    auto message = Message(from, stakeAccount, voteAccount, 42, recentBlockhash);
+    auto stakeAddress = addressFromValidatorSeed(signer, voteAddress, programId);
+    auto message = Message(signer, stakeAddress, voteAddress, 42, recentBlockhash);
     auto transaction = Transaction(message);
-    Signature signature0(
-        "5J2dVJcLLxfvFWxooaEE81Bpz4qpaGwqSezWfQnP5F2kYvbhQjdQ23mADjYap2svT767bcUjigwf9KgWUtSSjcr5");
-    Signature signature1(
-        "4W1pvybhUgnUTf6Kuchm9x52TCmBSjFf21GPYTQDuaUR6zeuoJZiBFNhWjWbi3WDUvFp8F7eEEcwBXhAZHw32Gbo");
+    Signature signature(
+        "4Q3ctvLybffZJBGdvrnEg171AjZeiMPGf3rVfGCpDVZRq9QaKVw8jWTMqHzZckGi2yXbGoQdBgeua24iMfPGHTtV");
     transaction.signatures.clear();
-    transaction.signatures.push_back(signature0);
-    transaction.signatures.push_back(signature1);
+    transaction.signatures.push_back(signature);
 
-    auto expectedHex =
-        "02d6c09b562bcb41e815f2d9a30511a932461df5a0c72a0e602bca84ff51067d639cfaa63bc56ebd9272731f88"
-        "21a9965745abcfe2a20af35058933c5887739a0aaf1260437b1910cd332ce4a51b0a5c0a125456142c0e96ab7b"
-        "7b10b3455cf9ca9033a49223b66e2e389f0993689b2ec1a48c169fcf0b920510f30e1800fea60602000507af8f"
-        "866c01b3b67a8a7edfda2424a4869210f361a98db7828587856f0eb8efb449a6029108b84a1bfc74bd11cce6e0"
-        "cd672dabe9d3993a028f3febddb7183773db1d1b3c012b3b486eeee5627fa15c54ec8b33c80dd436d72d0fbdcd"
-        "0453756906a7d51718c774c928566398691d5eb68b5eb8a39b4b6d5c73555b210000000006a1d817a502050b68"
-        "0791e6ce6db88e1e5b7150f61fc6790a4eb4d10000000000000000000000000000000000000000000000000000"
-        "0000000000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000020502000134000000002a0000000000"
-        "0000600000000000000006a1d8179137542a983437bdfe2a7ab2557f535c8a78722b68a49dc000000000060401"
-        "0203040c000000002a00000000000000";
-    ASSERT_EQ(hex(transaction.serialize()), expectedHex);
+    auto expectedString =
+        "7gcsGMV8fPkuSDegrBk5KF4eZtmGqdixEr5Kxx7m74nErH5EWxkKcvy5LKg3kqKHLMtzqGXrM8EdVskLu5k6cQUVmz"
+        "nfd6iGpuDkn4BWi8HaqSoaeL7DCx6QHLUwcyvorfqPkgSaYopY9MeB6MGKS4bKCQi1paP7eEKZj9JgAZTHnpzAuFzq"
+        "E5dC98MrbThoBmHqfybw1jHssp4NZjrxsuMz4oYcHe837WmnpinE68QEVf9FzuoXKrMDwYZQYogJHUZgxghvMmJu3X"
+        "VZk7hL1h7SgE9ow2SvvNfAUYfUTuz8N9m6JcXgwmNL51ZweW9F1fekmSKE3vLEAaVvvYFsDxn1gt4bXuTdAMuUDKdH"
+        "33YMLQr8eEsdUDZUm33KtuE7Ddy84NEg3KbpWAy8T4vkwiLyvoyjmMdzCkMuobyXWQV1rfRk5vTJ4x6dMgznfAeKEq"
+        "md6xZ2hN8JBmTenP5dsvZCCSCf4G7cUkdndKu552KALqiNHd5msgLJvJKSHmZjFhS43fDCvkG7njF8yaZzWjmAknWU"
+        "BbV6YaGmD3XmcWfJgvB1zivZJhiMbzopP8Nm5wL5iDbCrSZTGq2tzEsTvje75wv2RtuAcgiicEPTuPAin9fKyMbCpf"
+        "67pGgWPwH5DwYumMwd8zwoJyuakyqFsFLnBKTvp8pFCijdj7fEhyC31xuMV7crwyrN5X3y7QKCE7PZcBP637YHEPtT"
+        "vt1ECp4CqBSnvPc8vRD8EMhHe5jRFSDkQriUenEPFc51dTDTJWL26xuiTivktEm6ahHq5d6MPr4NRDvcRG2cZvEgxH"
+        "BLpKfuB5XL3JfQZ3Nn3B916gaK8owz9Rk2e3";
+    ASSERT_EQ(transaction.serialize(), expectedString);
 }
