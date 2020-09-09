@@ -187,9 +187,9 @@ TEST(Coin, validateAddressNimiq) {
 }
 
 TEST(Coin, validateAddressXRP) {
-    EXPECT_TRUE(validateAddress(TWCoinTypeXRP, "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQ"));
-    EXPECT_TRUE(validateAddress(TWCoinTypeXRP, "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh"));
-    EXPECT_FALSE(validateAddress(TWCoinTypeXRP, "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQX"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeRipple, "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQ"));
+    EXPECT_TRUE(validateAddress(TWCoinTypeRipple, "XVfvixWZQKkcenFRYApCjpTUyJ4BePTe3jJv7beatUZvQYh"));
+    EXPECT_FALSE(validateAddress(TWCoinTypeRipple, "rJHMeqKu8Ep7Fazx8MQG6JunaafBXz93YQX"));
 }
 
 TEST(Coin, validateAddressKin) {
