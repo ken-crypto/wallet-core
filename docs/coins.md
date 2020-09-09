@@ -21,7 +21,7 @@ This list is generated from [./coins.json](../coins.json)
 | 136     | Zcoin            | XZC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zcoin/info/logo.png" width="32" />        | <https://zcoin.io>            |
 | 144     | Ripple           | XRP    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/XRP/info/logo.png" width="32" />          | <https://ripple.com/xrp>      |
 | 145     | Bitcoin Cash     | BCH    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoincash/info/logo.png" width="32" />  | <https://bitcoincash.org>     |
-| 148     | Stellar          | XLM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/stellar/info/logo.png" width="32" />      | <https://stellar.org>         |
+| 148     | Stellar          | XLM    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/XLM/info/logo.png" width="32" />          | <https://stellar.org>         |
 | 156     | Bitcoin Gold     | BTG    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bitcoingold/info/logo.png" width="32" />  | <https://bitcoingold.org>     |
 | 165     | Nano             | NANO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/nano/info/logo.png" width="32" />         | <https://nano.org>            |
 | 175     | Ravencoin        | RVN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ravencoin/info/logo.png" width="32" />    | <https://ravencoin.org>       |
@@ -64,4 +64,5 @@ This list is generated from [./coins.json](../coins.json)
 | 19167   | Zelcash          | ZEL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zelcash/info/logo.png" width="32" />      | <https://zel.cash>            |
 | 5718350 | Wanchain         | WAN    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/wanchain/info/logo.png" width="32" />     | <https://wanchain.org>        |
 | 5741564 | Waves            | WAVES  | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/waves/info/logo.png" width="32" />        | <https://wavesplatform.com>   |
-| 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bsc/info/logo.png" width="32" />          | <https://www.binance.org/en/smartChain> |
+| 10000714 | Smart Chain Legacy | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/bsc/info/logo.png" width="32" />          | <https://www.binance.org/en/smartChain> |
+| 20000714 | Smart Chain      | BNB    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/info/logo.png" width="32" />   | <https://www.binance.org/en/smartChain> |

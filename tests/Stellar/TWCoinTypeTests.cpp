@@ -29,6 +29,6 @@ TEST(TWStellarCoinType, TWCoinType) {
     assertStringsEqual(symbol, "XLM");
     assertStringsEqual(txUrl, "https://blockchair.com/stellar/transaction/d9aeabfa9d24df8c5755125f8af243b74cd3ff878656cfa72c566a8824bf6e84");
     assertStringsEqual(accUrl, "https://blockchair.com/stellar/account/GCILJZQ3CKBKBUJWW4TAM6Q37LJA5MQX6GMSFSQN75BPLWIZ33OPRG52");
-    assertStringsEqual(id, "stellar");
+    assertStringsEqual(id, "XLM");
     assertStringsEqual(name, "Stellar");
 }
