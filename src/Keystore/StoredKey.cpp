@@ -27,7 +27,7 @@
 using namespace TW;
 using namespace TW::Keystore;
 
-StoredKey StoredKey::createWithMnemonic(const std::string& name, const std::string& password, const std::string& mnemonic) {
+StoredKey StoredKey::createWithMnemonic(const std::string& name, const Data& password, const std::string& mnemonic) {
     if (!HDWallet::isValid(mnemonic)) {
         throw std::invalid_argument("Invalid mnemonic");
     }
@@ -37,7 +37,7 @@ StoredKey StoredKey::createWithMnemonic(const std::string& name, const std::stri
     return key;
 }
 
-StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const std::string& password) {
+StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const Data& password) {
     const auto wallet = TW::HDWallet(128, "");
     const auto& mnemonic = wallet.mnemonic;
     assert(HDWallet::isValid(mnemonic));
@@ -46,24 +46,24 @@ StoredKey StoredKey::createWithMnemonicRandom(const std::string& name, const std
     return key;
 }
 
-StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const std::string& password, const std::string& mnemonic, TWCoinType coin) {
+StoredKey StoredKey::createWithMnemonicAddDefaultAddress(const std::string& name, const Data& password, const std::string& mnemonic, TWCoinType coin) {
     StoredKey key = createWithMnemonic(name, password, mnemonic);
 
     const auto wallet = HDWallet(mnemonic, "");
     const auto derivationPath = TW::derivationPath(coin);
-    const auto address = TW::deriveAddress(coin, wallet.getKey(derivationPath));
+    const auto address = TW::deriveAddress(coin, wallet.getKey(coin, derivationPath));
     const auto extendedKey = wallet.getExtendedPublicKey(TW::purpose(coin), coin, TW::xpubVersion(coin));
-    key.accounts.emplace_back(address, derivationPath, extendedKey);
+    key.accounts.emplace_back(address, coin, derivationPath, extendedKey);
 
     return key;
 }
 
-StoredKey StoredKey::createWithPrivateKey(const std::string& name, const std::string& password, const Data& privateKeyData) {
+StoredKey StoredKey::createWithPrivateKey(const std::string& name, const Data& password, const Data& privateKeyData) {
     StoredKey key = StoredKey(StoredKeyType::privateKey, name, password, privateKeyData);
     return key;
 }
 
-StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& name, const std::string& password, TWCoinType coin, const Data& privateKeyData) {
+StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& name, const Data& password, TWCoinType coin, const Data& privateKeyData) {
     const auto curve = TW::curve(coin);
     if (!PrivateKey::isValid(privateKeyData, curve)) {
         throw std::invalid_argument("Invalid private key data");
@@ -73,18 +73,18 @@ StoredKey StoredKey::createWithPrivateKeyAddDefaultAddress(const std::string& na
 
     const auto derivationPath = TW::derivationPath(coin);
     const auto address = TW::deriveAddress(coin, PrivateKey(privateKeyData));
-    key.accounts.emplace_back(address, derivationPath);
+    key.accounts.emplace_back(address, coin, derivationPath);
 
     return key;
 }
 
-StoredKey::StoredKey(StoredKeyType type, std::string name, const std::string& password, Data data)
+StoredKey::StoredKey(StoredKeyType type, std::string name, const Data& password, const Data& data)
     : type(type), id(), name(std::move(name)), payload(password, data), accounts() {
     boost::uuids::random_generator gen;
     id = boost::lexical_cast<std::string>(gen());
 }
 
-const HDWallet StoredKey::wallet(const std::string& password) const {
+const HDWallet StoredKey::wallet(const Data& password) const {
     if (type != StoredKeyType::mnemonicPhrase) {
         throw std::invalid_argument("Invalid account requested.");
     }
@@ -95,7 +95,7 @@ const HDWallet StoredKey::wallet(const std::string& password) const {
 
 const Account* StoredKey::account(TWCoinType coin) const {
     for (auto& account : accounts) {
-        if (account.coin() == coin) {
+        if (account.coin == coin) {
             return &account;
         }
     }
@@ -109,7 +109,7 @@ const Account* StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
     assert(wallet != nullptr);
 
     for (auto& account : accounts) {
-        if (account.coin() == coin) {
+        if (account.coin == coin) {
             if (account.address.empty()) {
                 account.address = wallet->deriveAddress(coin);
             }
@@ -123,45 +123,43 @@ const Account* StoredKey::account(TWCoinType coin, const HDWallet* wallet) {
     const auto version = TW::xpubVersion(coin);
     const auto extendedPublicKey = wallet->getExtendedPublicKey(derivationPath.purpose(), coin, version);
 
-    accounts.emplace_back(address, derivationPath, extendedPublicKey);
+    accounts.emplace_back(address, coin, derivationPath, extendedPublicKey);
     return &accounts.back();
 }
 
-void StoredKey::addAccount(const std::string& address, const DerivationPath& derivationPath, const std::string& extetndedPublicKey) {
-    accounts.emplace_back(address, derivationPath, extetndedPublicKey);
+void StoredKey::addAccount(const std::string& address, TWCoinType coin, const DerivationPath& derivationPath, const std::string& extetndedPublicKey) {
+    accounts.emplace_back(address, coin, derivationPath, extetndedPublicKey);
 }
 
 void StoredKey::removeAccount(TWCoinType coin) {
     accounts.erase(std::remove_if(accounts.begin(), accounts.end(), [coin](Account& account) -> bool {
-        return account.coin() == coin;
-        }
-    ), accounts.end());
+        return account.coin == coin;
+    }), accounts.end());
 }
 
-
-const PrivateKey StoredKey::privateKey(TWCoinType coin, const std::string& password) {
+const PrivateKey StoredKey::privateKey(TWCoinType coin, const Data& password) {
     switch (type) {
     case StoredKeyType::mnemonicPhrase: {
         const auto wallet = this->wallet(password);
         const auto account = *this->account(coin, &wallet);
-        return wallet.getKey(account.derivationPath);
+        return wallet.getKey(coin, account.derivationPath);
     }
     case StoredKeyType::privateKey:
         return PrivateKey(payload.decrypt(password));
     }
 }
 
-void StoredKey::fixAddresses(const std::string& password) {
+void StoredKey::fixAddresses(const Data& password) {
     switch (type) {
         case StoredKeyType::mnemonicPhrase: {
                 const auto wallet = this->wallet(password);
                 for (auto& account : accounts) {
-                    if (!account.address.empty() && TW::validateAddress(account.coin(), account.address)) {
+                    if (!account.address.empty() && TW::validateAddress(account.coin, account.address)) {
                         continue;
                     }
                     const auto& derivationPath = account.derivationPath;
-                    const auto key = wallet.getKey(derivationPath);
-                    account.address = TW::deriveAddress(derivationPath.coin(), key);
+                    const auto key = wallet.getKey(account.coin, derivationPath);
+                    account.address = TW::deriveAddress(account.coin, key);
                 }
             }
             break;
@@ -169,10 +167,10 @@ void StoredKey::fixAddresses(const std::string& password) {
         case StoredKeyType::privateKey: {
                 auto key = PrivateKey(payload.decrypt(password));
                 for (auto& account : accounts) {
-                    if (!account.address.empty() && TW::validateAddress(account.coin(), account.address)) {
+                    if (!account.address.empty() && TW::validateAddress(account.coin, account.address)) {
                         continue;
                     }
-                    account.address = TW::deriveAddress(account.coin(), key);
+                    account.address = TW::deriveAddress(account.coin, key);
                 }
             }
             break;
@@ -191,23 +189,23 @@ StoredKey StoredKey::createWithJson(const nlohmann::json& json) {
 }
 
 namespace CodingKeys {
-static const auto address = "address";
-static const auto type = "type";
-static const auto name = "name";
-static const auto id = "id";
-static const auto crypto = "crypto";
-static const auto activeAccounts = "activeAccounts";
-static const auto version = "version";
-static const auto coin = "coin";
+    static const auto address = "address";
+    static const auto type = "type";
+    static const auto name = "name";
+    static const auto id = "id";
+    static const auto crypto = "crypto";
+    static const auto activeAccounts = "activeAccounts";
+    static const auto version = "version";
+    static const auto coin = "coin";
 } // namespace CodingKeys
 
 namespace UppercaseCodingKeys {
-static const auto crypto = "Crypto";
+    static const auto crypto = "Crypto";
 } // namespace UppercaseCodingKeys
 
 namespace TypeString {
-static const auto privateKey = "private-key";
-static const auto mnemonic = "mnemonic";
+    static const auto privateKey = "private-key";
+    static const auto mnemonic = "mnemonic";
 } // namespace TypeString
 
 void StoredKey::loadJson(const nlohmann::json& json) {
@@ -248,7 +246,7 @@ void StoredKey::loadJson(const nlohmann::json& json) {
             coin = json[CodingKeys::coin].get<TWCoinType>();
         }
         auto address = json[CodingKeys::address].get<std::string>();
-        accounts.emplace_back(address, DerivationPath(TWPurposeBIP44, coin, 0, 0, 0));
+        accounts.emplace_back(address, coin, DerivationPath(TWPurposeBIP44, TWCoinTypeSlip44Id(coin), 0, 0, 0));
     }
 }
 

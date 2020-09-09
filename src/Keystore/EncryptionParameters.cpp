@@ -20,7 +20,7 @@ using namespace TW;
 using namespace TW::Keystore;
 
 template <typename Iter>
-static Data computeMAC(Iter begin, Iter end, Data key) {
+static Data computeMAC(Iter begin, Iter end, const Data& key) {
     auto data = Data();
     data.reserve((end - begin) + key.size());
     data.insert(data.end(), begin, end);
@@ -28,7 +28,7 @@ static Data computeMAC(Iter begin, Iter end, Data key) {
     return Hash::keccak256(data);
 }
 
-EncryptionParameters::EncryptionParameters(const std::string& password, Data data) : mac() {
+EncryptionParameters::EncryptionParameters(const Data& password, const Data& data) : mac() {
     auto scryptParams = boost::get<ScryptParameters>(kdfParams);
     auto derivedKey = Data(scryptParams.desiredKeyLength);
     scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
@@ -36,35 +36,36 @@ EncryptionParameters::EncryptionParameters(const std::string& password, Data dat
            scryptParams.desiredKeyLength);
 
     aes_encrypt_ctx ctx;
-    auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
-    assert(result != EXIT_FAILURE);
+    auto result = aes_encrypt_key128(derivedKey.data(), &ctx);
+    assert(result == EXIT_SUCCESS);
+    if (result == EXIT_SUCCESS) {
+        Data iv = cipherParams.iv;
+        encrypted = Data(data.size());
+        aes_ctr_encrypt(data.data(), encrypted.data(), static_cast<int>(data.size()), iv.data(), aes_ctr_cbuf_inc, &ctx);
 
-    Data iv = cipherParams.iv;
-    encrypted = Data(data.size());
-    aes_ctr_encrypt(data.data(), encrypted.data(), data.size(), iv.data(), aes_ctr_cbuf_inc, &ctx);
-
-    mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+        mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
+    }
 }
 
 EncryptionParameters::~EncryptionParameters() {
     std::fill(encrypted.begin(), encrypted.end(), 0);
 }
 
-Data EncryptionParameters::decrypt(const std::string& password) const {
+Data EncryptionParameters::decrypt(const Data& password) const {
     auto derivedKey = Data();
     auto mac = Data();
 
     if (kdfParams.which() == 0) {
         auto scryptParams = boost::get<ScryptParameters>(kdfParams);
         derivedKey.resize(scryptParams.defaultDesiredKeyLength);
-        scrypt(reinterpret_cast<const byte*>(password.data()), password.size(), scryptParams.salt.data(),
+        scrypt(password.data(), password.size(), scryptParams.salt.data(),
             scryptParams.salt.size(), scryptParams.n, scryptParams.r, scryptParams.p, derivedKey.data(),
             scryptParams.defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
     } else if (kdfParams.which() == 1) {
         auto pbkdf2Params = boost::get<PBKDF2Parameters>(kdfParams);
         derivedKey.resize(pbkdf2Params.defaultDesiredKeyLength);
-        pbkdf2_hmac_sha256(reinterpret_cast<const byte*>(password.data()), password.size(), pbkdf2Params.salt.data(),
+        pbkdf2_hmac_sha256(password.data(), password.size(), pbkdf2Params.salt.data(),
             pbkdf2Params.salt.size(), pbkdf2Params.iterations, derivedKey.data(),
             pbkdf2Params.defaultDesiredKeyLength);
         mac = computeMAC(derivedKey.end() - 16, derivedKey.end(), encrypted);
@@ -83,7 +84,7 @@ Data EncryptionParameters::decrypt(const std::string& password) const {
         auto result = aes_encrypt_key(derivedKey.data(), 16, &ctx);
         assert(result != EXIT_FAILURE);
 
-        aes_ctr_decrypt(encrypted.data(), decrypted.data(), encrypted.size(), iv.data(),
+        aes_ctr_decrypt(encrypted.data(), decrypted.data(), static_cast<int>(encrypted.size()), iv.data(),
                         aes_ctr_cbuf_inc, &ctx);
     } else if (cipher == "aes-128-cbc") {
         aes_decrypt_ctx ctx;

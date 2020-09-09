@@ -6,15 +6,15 @@
 
 #pragma once
 
-#include "TWBase.h"
-#include "TWCoinType.h"
-#include "TWCurve.h"
-#include "TWData.h"
-#include "TWHDVersion.h"
-#include "TWPrivateKey.h"
-#include "TWPublicKey.h"
-#include "TWPurpose.h"
-#include "TWString.h"
+#include <TrustWalletCore/TWBase.h>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWCurve.h>
+#include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWHDVersion.h>
+#include <TrustWalletCore/TWPrivateKey.h>
+#include <TrustWalletCore/TWPublicKey.h>
+#include <TrustWalletCore/TWPurpose.h>
+#include <TrustWalletCore/TWString.h>
 
 TW_EXTERN_C_BEGIN
 
@@ -63,7 +63,7 @@ TWString *_Nonnull TWHDWalletGetAddressForCoin(struct TWHDWallet *_Nonnull walle
 
 /// Generates the private key for the specified derivation path.
 TW_EXPORT_METHOD
-struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, TWString *_Nonnull derivationPath);
+struct TWPrivateKey *_Nonnull TWHDWalletGetKey(struct TWHDWallet *_Nonnull wallet, enum TWCoinType coin, TWString *_Nonnull derivationPath);
 
 /// Generates the private key for the specified BIP44 path.
 ///
@@ -81,6 +81,6 @@ TWString *_Nonnull TWHDWalletGetExtendedPublicKey(struct TWHDWallet *_Nonnull wa
 
 /// Computes the public key from an exteded public key representation.
 TW_EXPORT_STATIC_METHOD
-struct TWPublicKey *_Nullable TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, TWString *_Nonnull derivationPath);
+struct TWPublicKey *_Nullable TWHDWalletGetPublicKeyFromExtended(TWString *_Nonnull extended, enum TWCoinType coin, TWString *_Nonnull derivationPath);
 
 TW_EXTERN_C_END

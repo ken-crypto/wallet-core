@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "TWBase.h"
+#include <TrustWalletCore/TWBase.h>
 
 TW_EXTERN_C_BEGIN
 
@@ -16,6 +16,7 @@ enum TWBitcoinSigHashType {
     TWBitcoinSigHashTypeNone = 0x02,
     TWBitcoinSigHashTypeSingle = 0x03,
     TWBitcoinSigHashTypeFork = 0x40,
+    TWBitcoinSigHashTypeForkBTG = 0x4f40,
     TWBitcoinSigHashTypeAnyoneCanPay = 0x80
 };
 

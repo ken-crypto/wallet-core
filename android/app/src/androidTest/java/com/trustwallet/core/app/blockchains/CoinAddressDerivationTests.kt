@@ -5,6 +5,7 @@ import org.junit.Test
 import wallet.core.jni.HDWallet
 import wallet.core.jni.CoinType
 import wallet.core.jni.CoinType.*
+import kotlinx.coroutines.*
 
 class CoinAddressDerivationTests {
 
@@ -17,10 +18,12 @@ class CoinAddressDerivationTests {
         val wallet = HDWallet("shoot island position soft burden budget tooth cruel issue economy destroy above", "")
 
         for (i in 0 .. 4) {
-            CoinType.values().forEach { coin ->
-                val privateKey = wallet.getKeyForCoin(coin)
-                val address = coin.deriveAddress(privateKey)
-                runDerivationChecks(coin, address)
+            GlobalScope.launch {
+                CoinType.values().forEach { coin ->
+                    val privateKey = wallet.getKeyForCoin(coin)
+                    val address = coin.deriveAddress(privateKey)
+                    runDerivationChecks(coin, address)
+                }
             }
         }
     }
@@ -29,10 +32,11 @@ class CoinAddressDerivationTests {
         BINANCE -> assertEquals("bnb12vtaxl9952zm6rwf7v8jerq74pvaf77fcmvzhw", address)
         BITCOIN -> assertEquals("bc1quvuarfksewfeuevuc6tn0kfyptgjvwsvrprk9d", address)
         BITCOINCASH -> assertEquals("bitcoincash:qpzl3jxkzgvfd9flnd26leud5duv795fnv7vuaha70", address)
+        BITCOINGOLD -> assertEquals("btg1qwz9sed0k4neu6ycrudzkca6cnqe3zweq35hvtg", address)
         CALLISTO -> assertEquals("0x3E6FFC80745E6669135a76F4A7ce6BCF02436e04", address)
         DASH -> assertEquals("XqHiz8EXYbTAtBEYs4pWTHh7ipEDQcNQeT", address)
         DIGIBYTE -> assertEquals("dgb1qtjgmerfqwdffyf8ghcrkgy52cghsqptynmyswu", address)
-        ETHEREUM -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
+        ETHEREUM, SMARTCHAIN -> assertEquals("0x8f348F300873Fd5DA36950B2aC75a26584584feE", address)
         ETHEREUMCLASSIC -> assertEquals("0x078bA3228F3E6C08bEEac9A005de0b7e7089aD1c", address)
         GOCHAIN -> assertEquals("0x5940ce4A14210d4Ccd0ac206CE92F21828016aC2", address)
         GROESTLCOIN -> assertEquals("grs1qexwmshts5pdpeqglkl39zyl6693tmfwp0cue4j", address)
@@ -77,11 +81,14 @@ class CoinAddressDerivationTests {
         SOLANA -> assertEquals("2bUBiBNZyD29gP1oV6de7nxowMLoDBtopMMTGgMvjG5m", address)
         TON -> assertEquals("EQAmXWk7P7avw96EViZULpA85Lz6Si3MeWG-vFXmbEjpL-fo", address)
         ALGORAND -> assertEquals("JTJWO524JXIHVPGBDWFLJE7XUIA32ECOZOBLF2QP3V5TQBT3NKZSCG67BQ", address)
-        KUSAMA -> assertEquals("DE2jNrgosggXWJXfYDmRgy1q8XKkbtzSxj2uWAy5fbBfZwT", address)
-        POLKADOT -> assertEquals("1b97X8xTpFKMDzJpxiVhdYMNvekBDSfvGFf4DutxFkUjqfR", address)
+        KUSAMA -> assertEquals("G9xV2EatmrjRC1FLPexc3ddqNRRzCsAdURU8RFiAAJX6ppY", address)
+        POLKADOT -> assertEquals("13nN6BGAoJwd7Nw1XxeBCx5YcBXuYnL94Mh7i3xBprqVSsFk", address)
         KAVA -> assertEquals("kava1drpa0x9ptz0fql3frv562rcrhj2nstuz3pas87", address)
         CARDANO -> assertEquals("addr1snpa4z7ntyfszv7ckquprdw75w4qjqh0qmya9jtkpxxlzxghlqyvv7l0yjamh8fxraw06p3ua8sj2g2gv98v4849s43t9g2999kquuu5egnprk", address)
         NEO -> assertEquals("AT6w7PJvwPcSqHvtbNBY2aHPDv12eW5Uuf", address)
         FILECOIN -> assertEquals("f1zzykebxldfcakj5wdb5n3n7priul522fnmjzori", address)
+        ELROND -> assertEquals("erd1jfcy8aeru6vlx4fe6h3pc3vlpe2cnnur5zetxdhp879yagq7vqvs8na4f8", address)
+        BANDCHAIN -> assertEquals("band1624hqgend0s3d94z68fyka2y5jak6vd7u0l50r", address)
+        SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
     }
 }

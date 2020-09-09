@@ -7,6 +7,7 @@
 #include <TrustWalletCore/TWBitcoinScript.h>
 
 #include "../Bitcoin/Script.h"
+#include "../Bitcoin/SigHashType.h"
 
 using namespace TW::Bitcoin;
 
@@ -59,6 +60,10 @@ bool TWBitcoinScriptIsPayToWitnessScriptHash(const struct TWBitcoinScript *scrip
     return script->impl.isPayToWitnessScriptHash();
 }
 
+bool TWBitcoinScriptIsPayToWitnessPublicKeyHash(const struct TWBitcoinScript *script) {
+    return script->impl.isPayToWitnessPublicKeyHash();
+}
+
 bool TWBitcoinScriptIsWitnessProgram(const struct TWBitcoinScript *script) {
     return script->impl.isWitnessProgram();
 }
@@ -69,7 +74,7 @@ bool TWBitcoinScriptEqual(const struct TWBitcoinScript *_Nonnull lhs, const stru
 
 TWData *TWBitcoinScriptMatchPayToPubkey(const struct TWBitcoinScript *script) {
     std::vector<uint8_t> data;
-    if (script->impl.matchPayToPubkey(data)) {
+    if (script->impl.matchPayToPublicKey(data)) {
         return TWDataCreateWithBytes(data.data(), data.size());
     }
     return nullptr;
@@ -77,7 +82,7 @@ TWData *TWBitcoinScriptMatchPayToPubkey(const struct TWBitcoinScript *script) {
 
 TWData *TWBitcoinScriptMatchPayToPubkeyHash(const struct TWBitcoinScript *script) {
     std::vector<uint8_t> data;
-    if (script->impl.matchPayToPubkeyHash(data)) {
+    if (script->impl.matchPayToPublicKeyHash(data)) {
         return TWDataCreateWithBytes(data.data(), data.size());
     }
     return nullptr;
@@ -127,7 +132,7 @@ struct TWBitcoinScript *TWBitcoinScriptBuildPayToScriptHash(TWData *scriptHash) 
 
 struct TWBitcoinScript *TWBitcoinScriptBuildPayToWitnessPubkeyHash(TWData *hash) {
     auto v = reinterpret_cast<const std::vector<uint8_t>*>(hash);
-    auto script = Script::buildPayToWitnessPubkeyHash(*v);
+    auto script = Script::buildPayToWitnessPublicKeyHash(*v);
     return new TWBitcoinScript{ .impl = script };
 }
 
@@ -137,8 +142,12 @@ struct TWBitcoinScript *TWBitcoinScriptBuildPayToWitnessScriptHash(TWData *scrip
     return new TWBitcoinScript{ .impl = script };
 }
 
-struct TWBitcoinScript *_Nonnull TWBitcoinScriptBuildForAddress(TWString *_Nonnull address, enum TWCoinType coin) {
+struct TWBitcoinScript *_Nonnull TWBitcoinScriptLockScriptForAddress(TWString *_Nonnull address, enum TWCoinType coin) {
     auto s = reinterpret_cast<const std::string*>(address);
-    auto script = Script::buildForAddress(*s, coin);
+    auto script = Script::lockScriptForAddress(*s, coin);
     return new TWBitcoinScript{ .impl = script };
+}
+
+uint32_t TWBitcoinScriptHashTypeForCoin(enum TWCoinType coinType) {
+    return TW::Bitcoin::hashTypeForCoin(coinType);
 }

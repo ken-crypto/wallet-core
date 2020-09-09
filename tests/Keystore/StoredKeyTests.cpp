@@ -8,6 +8,7 @@
 
 #include "Coin.h"
 #include "HexCoding.h"
+#include "Data.h"
 #include "PrivateKey.h"
 
 #include <stdexcept>
@@ -19,9 +20,14 @@ namespace TW::Keystore {
 
 using namespace std;
 
-const auto password = "password";
+const auto passwordString = "password";
+const auto password = TW::data(string(passwordString));
 const auto mnemonic = "team engine square letter hero song dizzy scrub tornado fabric divert saddle";
 const TWCoinType coinTypeBc = TWCoinTypeBitcoin;
+const TWCoinType coinTypeBnb = TWCoinTypeBinance;
+const TWCoinType coinTypeBsc = TWCoinTypeSmartChain;
+const TWCoinType coinTypeEth = TWCoinTypeEthereum;
+const TWCoinType coinTypeBscLegacy = TWCoinTypeSmartChainLegacy;
 
 TEST(StoredKey, CreateWithMnemonic) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
@@ -63,7 +69,7 @@ TEST(StoredKey, CreateWithMnemonicAddDefaultAddress) {
     const Data& mnemo2Data = key.payload.decrypt(password);
     EXPECT_EQ(string(mnemo2Data.begin(), mnemo2Data.end()), string(mnemonic));
     EXPECT_EQ(key.accounts.size(), 1);
-    EXPECT_EQ(key.accounts[0].coin(), coinTypeBc);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
     EXPECT_EQ(key.accounts[0].address, "bc1qturc268v0f2srjh4r2zu4t6zk4gdutqd5a6zny");
     EXPECT_EQ(hex(key.privateKey(coinTypeBc, password).bytes), "d2568511baea8dc347f14c4e0479eb8ebe29eb5f664ed796e755896250ffd11f");
 }
@@ -73,7 +79,7 @@ TEST(StoredKey, CreateWithPrivateKeyAddDefaultAddress) {
     auto key = StoredKey::createWithPrivateKeyAddDefaultAddress("name", password, coinTypeBc, privateKey);
     EXPECT_EQ(key.type, StoredKeyType::privateKey);
     EXPECT_EQ(key.accounts.size(), 1);
-    EXPECT_EQ(key.accounts[0].coin(), coinTypeBc);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
     EXPECT_EQ(key.accounts[0].address, "bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr");
     EXPECT_EQ(hex(key.privateKey(coinTypeBc, password).bytes), hex(privateKey));
 
@@ -110,25 +116,25 @@ TEST(StoredKey, AccountGetCreate) {
     // not exists, wallet nonnull, create
     const Account* acc3 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc3 != nullptr);
-    EXPECT_EQ(acc3->coin(), coinTypeBc); 
+    EXPECT_EQ(acc3->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
 
     // exists
     const Account* acc4 = key.account(coinTypeBc);
     EXPECT_TRUE(acc4 != nullptr);
-    EXPECT_EQ(acc4->coin(), coinTypeBc); 
+    EXPECT_EQ(acc4->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
 
     // exists, wallet nonnull, not create
     const Account* acc5 = key.account(coinTypeBc, &wallet);
     EXPECT_TRUE(acc5 != nullptr);
-    EXPECT_EQ(acc5->coin(), coinTypeBc); 
+    EXPECT_EQ(acc5->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
 
     // exists, wallet null, not create
     const Account* acc6 = key.account(coinTypeBc, nullptr);
     EXPECT_TRUE(acc6 != nullptr);
-    EXPECT_EQ(acc6->coin(), coinTypeBc); 
+    EXPECT_EQ(acc6->coin, coinTypeBc); 
     EXPECT_EQ(key.accounts.size(), 1);
 }
 
@@ -136,11 +142,29 @@ TEST(StoredKey, AddRemoveAccount) {
     auto key = StoredKey::createWithMnemonic("name", password, mnemonic);
     EXPECT_EQ(key.accounts.size(), 0);
 
-    const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
-    key.addAccount("bc1q375sq4kl2nv0mlmup3vm8znn4eqwu7mt6hkwhr", derivationPath, "zpub6qbsWdbcKW9sC6shTKK4VEhfWvDCoWpfLnnVfYKHLHt31wKYUwH3aFDz4WLjZvjHZ5W4qVEyk37cRwzTbfrrT1Gnu8SgXawASnkdQ994atn");
-    EXPECT_EQ(key.accounts.size(), 1);
+    {
+        const auto derivationPath = DerivationPath("m/84'/0'/0'/0/0");
+        key.addAccount("bc1qaucw06s3agez8tyyk4zj9kt0q2934e3mcewdpf", coinTypeBc, derivationPath, "zpub6rxtad3SPT1C5GUDjPiKQ5oJN5DBeMbdUR7LrdYt12VbU7TBSpGUkdLvfVYGuj1N5edkDoZ3bu1fdN1HprQYfCBdsSH5CaAAygHGsanwtTe");
+        EXPECT_EQ(key.accounts.size(), 1);
+    }
+    {
+        const auto derivationPath = DerivationPath("m/714'/0'/0'/0/0");
+        key.addAccount("bnb1utrnnjym7ustgw7pgyvtmnxay4qmt3ahh276nu", coinTypeBnb, derivationPath, "");
+        key.addAccount("0x23b02dC8f67eD6cF8DCa47935791954286ffe7c9", coinTypeBsc, derivationPath, "");
+        EXPECT_EQ(key.accounts.size(), 3);
+    }
+    {
+        const auto derivationPath = DerivationPath("m/60'/0'/0'/0/0");
+        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeEth, derivationPath, "");
+        key.addAccount("0xC0d97f61A84A0708225F15d54978D628Fe2C5E62", coinTypeBscLegacy, derivationPath, "");
+        EXPECT_EQ(key.accounts.size(), 5);
+    }
 
     key.removeAccount(coinTypeBc);
+    key.removeAccount(coinTypeBnb);
+    key.removeAccount(coinTypeBsc);
+    key.removeAccount(coinTypeEth);
+    key.removeAccount(coinTypeBscLegacy);
     EXPECT_EQ(key.accounts.size(), 0);
 }
 
@@ -175,15 +199,15 @@ TEST(StoredKey, LoadNonexistent) {
 TEST(StoredKey, LoadLegacyPrivateKey) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/legacy-private-key.json");
     EXPECT_EQ(key.id, "3051ca7d-3d36-4a4a-acc2-09e9083732b0");
-    EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeEthereum);
-    EXPECT_EQ(hex(key.payload.decrypt("testpassword")), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
+    EXPECT_EQ(hex(key.payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
 
 TEST(StoredKey, LoadLivepeerKey) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/livepeer.json");
     EXPECT_EQ(key.id, "70ea3601-ee21-4e94-a7e4-66255a987d22");
-    EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeEthereum);
-    EXPECT_EQ(hex(key.payload.decrypt("Radchenko")), "09b4379d9a41a71d94ee36357bccb4d77b45e7fd9307e2c0f673dd54c0558c73");
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
+    EXPECT_EQ(hex(key.payload.decrypt(TW::data("Radchenko"))), "09b4379d9a41a71d94ee36357bccb4d77b45e7fd9307e2c0f673dd54c0558c73");
 }
 
 TEST(StoredKey, LoadPBKDF2Key) {
@@ -196,7 +220,7 @@ TEST(StoredKey, LoadPBKDF2Key) {
     EXPECT_EQ(boost::get<PBKDF2Parameters>(payload.kdfParams).iterations, 262144);
     EXPECT_EQ(hex(boost::get<PBKDF2Parameters>(payload.kdfParams).salt), "ae3cd4e7013836a3df6bd7241b12db061dbe2c6785853cce422d148a624ce0bd");
 
-    EXPECT_EQ(hex(payload.decrypt("testpassword")), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
+    EXPECT_EQ(hex(payload.decrypt(TW::data("testpassword"))), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
 
 TEST(StoredKey, LoadLegacyMnemonic) {
@@ -207,13 +231,21 @@ TEST(StoredKey, LoadLegacyMnemonic) {
     const auto mnemonic = string(reinterpret_cast<const char*>(data.data()));
     EXPECT_EQ(mnemonic, "ripple scissors kick mammal hire column oak again sun offer wealth tomorrow wagon turn back");
 
-    EXPECT_EQ(key.accounts[0].coin(), TWCoinTypeEthereum);
+    EXPECT_EQ(key.accounts[0].coin, TWCoinTypeEthereum);
     EXPECT_EQ(key.accounts[0].derivationPath.string(), "m/44'/60'/0'/0/0");
     EXPECT_EQ(key.accounts[0].address, "");
-    EXPECT_EQ(key.accounts[1].coin(), coinTypeBc);
+    EXPECT_EQ(key.accounts[1].coin, coinTypeBc);
     EXPECT_EQ(key.accounts[1].derivationPath.string(), "m/84'/0'/0'/0/0");
     EXPECT_EQ(key.accounts[1].address, "");
     EXPECT_EQ(key.accounts[1].extendedPublicKey, "zpub6r97AegwVxVbJeuDAWP5KQgX5y4Q6KyFUrsFQRn8yzSXrnmpwg1ZKHSWwECR1Kiqgr4h93WN5kdS48KC6hVFniuZHqVFXjULZZkCwurqyPn");
+}
+
+TEST(StoredKey, LoadFromWeb3j) {
+    const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/web3j.json");
+    EXPECT_EQ(key.id, "86066d8c-8dba-4d81-afd4-934e2a2b72a2");
+    const auto password = parse_hex("2d6eefbfbd4622efbfbdefbfbd516718efbfbdefbfbdefbfbdefbfbd59efbfbd30efbfbdefbfbd3a4348efbfbd2aefbfbdefbfbd49efbfbd27efbfbd0638efbfbdefbfbdefbfbd4cefbfbd6befbfbdefbfbd6defbfbdefbfbd63efbfbd5aefbfbd61262b70efbfbdefbfbdefbfbdefbfbdefbfbdc7aa373163417cefbfbdefbfbdefbfbd44efbfbdefbfbd1d10efbfbdefbfbdefbfbd61dc9e5b124befbfbd11efbfbdefbfbd2fefbfbdefbfbd3d7c574868efbfbdefbfbdefbfbd37043b7b5c1a436471592f02efbfbd18efbfbdefbfbd2befbfbdefbfbd7218efbfbd6a68efbfbdcb8e5f3328773ec48174efbfbd67efbfbdefbfbdefbfbdefbfbdefbfbd2a31efbfbd7f60efbfbdd884efbfbd57efbfbd25efbfbd590459efbfbd37efbfbd2bdca20fefbfbdefbfbdefbfbdefbfbd39450113efbfbdefbfbdefbfbd454671efbfbdefbfbdd49fefbfbd47efbfbdefbfbdefbfbdefbfbd00efbfbdefbfbdefbfbdefbfbd05203f4c17712defbfbd7bd1bbdc967902efbfbdc98a77efbfbd707a36efbfbd12efbfbdefbfbd57c78cefbfbdefbfbdefbfbd10efbfbdefbfbdefbfbde1a1bb08efbfbdefbfbd26efbfbdefbfbd58efbfbdefbfbdc4b1efbfbd295fefbfbd0eefbfbdefbfbdefbfbd0e6eefbfbd");
+    const auto data = key.payload.decrypt(password);
+    EXPECT_EQ(hex(data), "043c5429c7872502531708ec0d821c711691402caf37ef7ba78a8c506f10653b");
 }
 
 TEST(StoredKey, ReadWallet) {
@@ -250,12 +282,12 @@ TEST(StoredKey, InvalidPassword) {
 TEST(StoredKey, EmptyAccounts) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/empty-accounts.json");
 
-    ASSERT_NO_THROW(key.payload.decrypt("testpassword"));
+    ASSERT_NO_THROW(key.payload.decrypt(TW::data("testpassword")));
 }
 
 TEST(StoredKey, Decrypt) {
     const auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/key.json");
-    const auto privateKey = key.payload.decrypt("testpassword");
+    const auto privateKey = key.payload.decrypt(TW::data("testpassword"));
 
     EXPECT_EQ(hex(privateKey), "7a28b5ba57c53603b0b07b56bba752f7784bf506fa95edc395f5cf6c7514fe9d");
 }
@@ -297,7 +329,7 @@ TEST(StoredKey, RemoveAccount) {
     EXPECT_EQ(key.accounts.size(), 2);
     key.removeAccount(TWCoinTypeEthereum);
     EXPECT_EQ(key.accounts.size(), 1);
-    EXPECT_EQ(key.accounts[0].coin(), coinTypeBc);
+    EXPECT_EQ(key.accounts[0].coin, coinTypeBc);
 }
 
 TEST(StoredKey, MissingAddress) {
@@ -310,7 +342,7 @@ TEST(StoredKey, MissingAddress) {
 
 TEST(StoredKey, EtherWalletAddressNo0x) {
     auto key = StoredKey::load(TESTS_ROOT + "/Keystore/Data/ethereum-wallet-address-no-0x.json");
-    key.fixAddresses("15748c4e3dca6ae2110535576ab0c398cb79d985707c68ee6c9f9df9d421dd53");
+    key.fixAddresses(TW::data("15748c4e3dca6ae2110535576ab0c398cb79d985707c68ee6c9f9df9d421dd53"));
     EXPECT_EQ(key.account(TWCoinTypeEthereum, nullptr)->address, "0xAc1ec44E4f0ca7D172B7803f6836De87Fb72b309");
 }
 

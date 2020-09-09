@@ -5,10 +5,10 @@
 // file LICENSE at the root of the source code distribution tree.
 #pragma once
 
-#include "TWBase.h"
-#include "TWCoinType.h"
-#include "TWData.h"
-#include "TWString.h"
+#include <TrustWalletCore/TWBase.h>
+#include <TrustWalletCore/TWCoinType.h>
+#include <TrustWalletCore/TWData.h>
+#include <TrustWalletCore/TWString.h>
 
 TW_EXTERN_C_BEGIN
 
@@ -22,6 +22,14 @@ extern TWData *_Nonnull TWAnySignerSign(TWData *_Nonnull input, enum TWCoinType 
 extern TWString *_Nonnull TWAnySignerSignJSON(TWString *_Nonnull json, TWData *_Nonnull key, enum TWCoinType coin);
 
 extern bool TWAnySignerSupportsJSON(enum TWCoinType coin);
+
+/// Encodes serialized SigningInput data to raw platform/coin specific bytes
+/// Example: EthereumSigningInput will be encoded as raw RLP bytes which can be sent over JSONRPC (eth_sendRawTransaction)
+extern TWData *_Nonnull TWAnySignerEncode(TWData *_Nonnull input, enum TWCoinType coin);
+
+/// Decodes raw platform/coin specific bytes to representable json data
+/// Example: Ethereum RLP bytes will be decoded into same json returned from JSONRPC (eth_getTransactionByHash)
+extern TWData *_Nonnull TWAnySignerDecode(TWData *_Nonnull input, enum TWCoinType coin);
 
 /// Plan a transaction (for UTXO chains).
 extern TWData *_Nonnull TWAnySignerPlan(TWData *_Nonnull input, enum TWCoinType coin);

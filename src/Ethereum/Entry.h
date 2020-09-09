@@ -23,6 +23,8 @@ public:
             TWCoinTypePOANetwork,
             TWCoinTypeThunderToken,
             TWCoinTypeTomoChain,
+            TWCoinTypeSmartChainLegacy,
+            TWCoinTypeSmartChain,
         };
     }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;
@@ -31,6 +33,8 @@ public:
     virtual void sign(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
     virtual bool supportsJSONSigning() const { return true; }
     virtual std::string signJSON(TWCoinType coin, const std::string& json, const Data& key) const;
+    virtual void encodeRawTx(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
+    virtual void decodeRawTx(TWCoinType coin, const Data& dataIn, Data& dataOut) const;
 };
 
 } // namespace TW::Ethereum

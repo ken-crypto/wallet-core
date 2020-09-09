@@ -119,4 +119,18 @@ TEST(AnyAddress, Data) {
         auto keyHash = WRAPD(TWAnyAddressData(addr.get()));
         assertHexEqual(keyHash, "172bdf43265c0adfe105a1a8c45b3f406a38362f24");
     }
+    // elrond
+    {
+        auto string = STRING("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeElrond));
+        auto pubkey = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(pubkey, "fd691bb5e85d102687d81079dffce842d4dc328276d2d4c60d8fd1c3433c3293");
+    }
+    // near
+    {
+        auto string = STRING("NEARTDDWrUMdoC2rA1eU6gNrSU2zyGKdR71TNucTvsQHyfAXjKcJb");
+        auto addr = WRAP(TWAnyAddress, TWAnyAddressCreateWithString(string.get(), TWCoinTypeNEAR));
+        auto pubkey = WRAPD(TWAnyAddressData(addr.get()));
+        assertHexEqual(pubkey, "3b83b07cab54824a59c3d3f2e203a7cd913b7fcdc4439595983e2402c2cf791d");
+    }
 }

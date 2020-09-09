@@ -49,14 +49,14 @@ struct TWPublicKey *_Nonnull TWPublicKeyUncompressed(struct TWPublicKey *_Nonnul
 }
 
 bool TWPublicKeyVerify(struct TWPublicKey *_Nonnull pk, TWData *signature, TWData *message) {
-    auto& s = *reinterpret_cast<const TW::Data *>(signature);
-    auto& m = *reinterpret_cast<const TW::Data *>(message);
+    const auto& s = *reinterpret_cast<const TW::Data *>(signature);
+    const auto& m = *reinterpret_cast<const TW::Data *>(message);
     return pk->impl.verify(s, m);
 }
 
 bool TWPublicKeyVerifySchnorr(struct TWPublicKey *_Nonnull pk, TWData *_Nonnull signature, TWData *_Nonnull message) {
-    auto& s = *reinterpret_cast<const TW::Data *>(signature);
-    auto& m = *reinterpret_cast<const TW::Data *>(message);
+    const auto& s = *reinterpret_cast<const TW::Data *>(signature);
+    const auto& m = *reinterpret_cast<const TW::Data *>(message);
     return pk->impl.verifySchnorr(s, m);
 }
 
@@ -70,14 +70,10 @@ TWString *_Nonnull TWPublicKeyDescription(struct TWPublicKey *_Nonnull publicKey
 }
 
 struct TWPublicKey *_Nullable TWPublicKeyRecover(TWData *_Nonnull signature, TWData *_Nonnull message) {
-    auto signatureBytes = TWDataBytes(signature);
-    auto v = signatureBytes[64];
-    if (v >= 27) {
-        v -= 27;
-    }
-    TW::Data result(65);
-    if (ecdsa_recover_pub_from_sig(&secp256k1, result.data(), signatureBytes, TWDataBytes(message), v) != 0) {
+    try {
+        const PublicKey publicKey = PublicKey::recover(*((TW::Data*)signature), *((TW::Data*)message));
+        return new TWPublicKey{ publicKey };
+    } catch (...) {
         return nullptr;
     }
-    return new TWPublicKey{ PublicKey(result, TWPublicKeyTypeSECP256k1Extended) };
 }

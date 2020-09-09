@@ -20,6 +20,8 @@
 #include "../Cardano/AddressV3.h"
 #include "../NEO/Address.h"
 #include "../Nano/Address.h"
+#include "../Elrond/Address.h"
+#include "../NEAR/Address.h"
 
 #include "../Coin.h"
 #include "../HexCoding.h"
@@ -36,13 +38,13 @@ bool TWAnyAddressEqual(struct TWAnyAddress* _Nonnull lhs, struct TWAnyAddress* _
 }
 
 bool TWAnyAddressIsValid(TWString* _Nonnull string, enum TWCoinType coin) {
-    auto& address = *reinterpret_cast<const std::string*>(string);
+    const auto& address = *reinterpret_cast<const std::string*>(string);
     return TW::validateAddress(coin, address);
 }
 
 struct TWAnyAddress* _Nullable TWAnyAddressCreateWithString(TWString* _Nonnull string,
                                                             enum TWCoinType coin) {
-    auto& address = *reinterpret_cast<const std::string*>(string);
+    const auto& address = *reinterpret_cast<const std::string*>(string);
     auto normalized = TW::normalizeAddress(coin, address);
     if (normalized.empty()) { return nullptr; }
     return new TWAnyAddress{TWStringCreateWithUTF8Bytes(normalized.c_str()), coin};
@@ -75,6 +77,7 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeCosmos:
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
+    case TWCoinTypeBandChain:
     case TWCoinTypeIoTeX: {
         Cosmos::Address addr;
         if (!Cosmos::Address::decode(string, addr)) {
@@ -141,6 +144,8 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     case TWCoinTypeTheta:
     case TWCoinTypeWanchain:
     case TWCoinTypeAion:
+    case TWCoinTypeSmartChainLegacy:
+    case TWCoinTypeSmartChain:
         data = parse_hex(string);
         break;
 
@@ -184,6 +189,23 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
         data = Data(addr.bytes.begin(), addr.bytes.end());
         break;
     }
+
+    case TWCoinTypeElrond: {
+        Elrond::Address addr;
+        if (Elrond::Address::decode(string, addr)) {
+            data = addr.getKeyHash();
+        }
+        
+        break;
+    }
+
+    case TWCoinTypeNEAR: {
+        auto addr = NEAR::Address(string);
+        // remove last 4 bytes checksum
+        data = Data(addr.bytes.begin(), addr.bytes.end() - 4);
+        break;
+    }
+
     default: break;
     }
     return TWDataCreateWithBytes(data.data(), data.size());

@@ -12,6 +12,7 @@
 
 #include <map>
 #include <set>
+#include <mutex>
 
 // Includes for entry points for coin implementations
 #include "Aeternity/Entry.h"
@@ -51,6 +52,7 @@
 #include "Waves/Entry.h"
 #include "Zcash/Entry.h"
 #include "Zilliqa/Entry.h"
+#include "Elrond/Entry.h"
 // end_of_coin_includes_marker_do_not_modify
 
 using namespace TW;
@@ -58,6 +60,7 @@ using namespace std;
 
 // Map with coin entry dispatchers, key is coin type
 map<TWCoinType, CoinEntry*> dispatchMap = {}; 
+mutex dispatchMapMutex;
 // List of supported coint types
 set<TWCoinType> coinTypes = {};
 
@@ -100,8 +103,14 @@ void setupDispatchers() {
         new Waves::Entry(),
         new Zcash::Entry(),
         new Zilliqa::Entry(),
+        new Elrond::Entry(),
     }; // end_of_coin_entries_marker_do_not_modify
 
+    lock_guard<mutex> guard(dispatchMapMutex);
+    if (dispatchMap.size() > 0) {
+        // already set up, skip
+        return;
+    }
     dispatchMap.clear();
     coinTypes.clear();
     for (auto d : dispatchers) {
@@ -109,11 +118,12 @@ void setupDispatchers() {
         for (auto c : dispCoins) {
             assert(dispatchMap.find(c) == dispatchMap.end()); // each coin must appear only once
             dispatchMap[c] = d;
-            auto setResult = coinTypes.emplace(c);
-            assert(setResult.second == true); // each coin must appear only once
+            if (coinTypes.emplace(c).second != true) {
+                // each coin must appear only once
+                abort();
+            };
         }
     }
-    return;
     // Note: dispatchers are created at first use, and never freed
 }
 
@@ -121,6 +131,8 @@ inline void setupDispatchersIfNeeded() {
     if (dispatchMap.size() == 0) {
         setupDispatchers();
     }
+    assert(dispatchMap.size() > 0);
+    // it is set up by this time, and will not get modified
 }
 
 CoinEntry* coinDispatcher(TWCoinType coinType) {
@@ -147,7 +159,7 @@ bool TW::validateAddress(TWCoinType coin, const std::string& string) {
     return dispatcher->validateAddress(coin, string, p2pkh, p2sh, hrp);
 }
 
-std::string TW::normalizeAddress(TWCoinType coin, const std::string &address) {
+std::string TW::normalizeAddress(TWCoinType coin, const std::string& address) {
     if (!TW::validateAddress(coin, address)) {
         // invalid address, not normalizing
         return "";
@@ -190,6 +202,18 @@ bool TW::supportsJSONSigning(TWCoinType coinType) {
     auto dispatcher = coinDispatcher(coinType);
     assert(dispatcher != nullptr);
     return dispatcher->supportsJSONSigning();
+}
+
+void TW::anyCoinEncode(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+    auto dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    dispatcher->encodeRawTx(coinType, dataIn, dataOut);
+}
+
+void TW::anyCoinDecode(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
+    auto dispatcher = coinDispatcher(coinType);
+    assert(dispatcher != nullptr);
+    dispatcher->decodeRawTx(coinType, dataIn, dataOut);
 }
 
 void TW::anyCoinPlan(TWCoinType coinType, const Data& dataIn, Data& dataOut) {
@@ -252,6 +276,10 @@ Hash::Hasher TW::publicKeyHasher(TWCoinType coin) {
 
 Hash::Hasher TW::base58Hasher(TWCoinType coin) {
     return getCoinInfo(coin).base58Hasher;
+}
+
+uint32_t TW::slip44Id(TWCoinType coin) {
+    return getCoinInfo(coin).slip44;
 }
 
 TWString *_Nullable TWCoinTypeConfigurationGetSymbol(enum TWCoinType coin) {

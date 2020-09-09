@@ -1,5 +1,5 @@
-set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/protobuf/staging/protobuf-3.9.0)
-set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/protobuf/staging/protobuf-3.9.0)
+set(protobuf_SOURCE_DIR ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.9.0)
+set(protobuf_source_dir ${CMAKE_SOURCE_DIR}/build/local/src/protobuf/protobuf-3.9.0)
 
 # Updated from https://github.com/protocolbuffers/protobuf/blob/master/cmake/libprotopuf.cmake
 
@@ -156,4 +156,4 @@ set_target_properties(
     LINK_FLAGS -no-undefined
 )
 
-target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1)
+target_compile_options(protobuf PRIVATE -DHAVE_PTHREAD=1 -Wno-inconsistent-missing-override -Wno-shorten-64-to-32)
