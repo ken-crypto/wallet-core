@@ -1515,5 +1515,30 @@
       "clientPublic": "https://bsc-dataseed1.binance.org",
       "clientDocs": "https://eth.wiki/json-rpc/API"
     }
+  },
+  {
+    "id": "cro",
+    "name": "CRO",
+    "coinId": 394,
+    "symbol": "TCRO",
+    "decimals": 8,
+    "blockchain": "Cosmos",
+    "derivationPath": "m/44'/394'/0'/0/0",
+    "curve": "secp256k1",
+    "publicKeyType": "secp256k1",
+    "hrp": "tcro",
+    "explorer": {
+      "url": "https://chain.crypto.com",
+      "txPath": "/explorer/tx/",
+      "accountPath": "/account/",
+      "sampleTx": "ABB38B3F18CF68DABFD45C6981013722E79533184EC13E830C3608C543600576",
+      "sampleAccount": "tcro1descn8h7kj52en8gn9j9dqwyy495mnxz6vlr34"
+    },
+    "info": {
+      "url": "https://chain.crypto.com",
+      "client": "https://github.com/crypto-com/chain-main",
+      "clientPublic": "",
+      "clientDocs": "https://chain.crypto.com/docs/getting-started/"
+    }
   }
 ]

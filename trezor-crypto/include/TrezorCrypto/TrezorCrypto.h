@@ -18,7 +18,7 @@
 #include <TrezorCrypto/hasher.h>
 #include <TrezorCrypto/hmac.h>
 #include <TrezorCrypto/memzero.h>
-#include <TrezorCrypto/monero.h>
+#include <TrezorCrypto/monero/monero.h>
 #include <TrezorCrypto/nem.h>
 #include <TrezorCrypto/nist256p1.h>
 #include <TrezorCrypto/pbkdf2.h>
@@ -27,3 +27,4 @@
 #include <TrezorCrypto/secp256k1.h>
 #include <TrezorCrypto/sha2.h>
 #include <TrezorCrypto/sha3.h>
+

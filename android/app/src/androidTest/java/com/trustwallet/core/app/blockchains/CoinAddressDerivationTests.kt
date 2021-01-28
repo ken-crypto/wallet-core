@@ -111,5 +111,6 @@ class CoinAddressDerivationTests {
         )
         BANDCHAIN -> assertEquals("band1624hqgend0s3d94z68fyka2y5jak6vd7u0l50r", address)
         SMARTCHAINLEGACY -> assertEquals("0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8", address)
+        CRO -> assertEquals("tcro16fdf785ejm00jf9a24d23pzqzjh2h05k3nm2uk", address)
     }
 }
