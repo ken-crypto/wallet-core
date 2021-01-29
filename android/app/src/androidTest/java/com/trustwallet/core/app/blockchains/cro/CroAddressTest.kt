@@ -51,10 +51,8 @@ class CroAddressTest {
         val publicKey3 = privateKey3.getPublicKeySecp256k1(true)
         val address3 = AnyAddress(publicKey3, CoinType.CRO).description()
 
-        Log.i(TAG, "address1 :$address1")
-        Log.i(TAG, "address2 :$address2")
-        Log.i(TAG, "address3 :$address3")
-
-
+        Assert.assertEquals(address1,"tcro1qhw03a43g23m9877czt6a0n0cmqyel6huxfkyy")
+        Assert.assertEquals(address2,"tcro1dagn55m73kac8zm982tpycgptxf07yzh0jgqyp")
+        Assert.assertEquals(address3,"tcro16fdf785ejm00jf9a24d23pzqzjh2h05k3nm2uk")
     }
 }
