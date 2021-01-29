@@ -202,6 +202,9 @@ class CoinAddressDerivationTests: XCTestCase {
                 case .smartChainLegacy:
                     let expectedResult = "0x49784f90176D8D9d4A3feCDE7C1373dAAb5b13b8"
                     assertCoinDerivation(coin, expectedResult, derivedAddress, address)
+                case .cro:
+                    let expectedResult = "tcro16fdf785ejm00jf9a24d23pzqzjh2h05k3nm2uk"
+                    assertCoinDerivation(coin, expectedResult, derivedAddress, address)
                 @unknown default:
                     fatalError()
                 }
