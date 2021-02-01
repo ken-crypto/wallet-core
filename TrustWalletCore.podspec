@@ -1,34 +1,34 @@
-version = '2.5.6'
+version = '2.3.3.1'
 
 Pod::Spec.new do |s|
   s.name         = 'TrustWalletCore'
   s.version      = version
   s.summary      = 'Trust Wallet core data structures and algorithms.'
-  s.homepage     = 'https://github.com/trustwallet/wallet-core'
+  s.homepage     = 'https://github.com/monacohq/wallet-core'
   s.license      = 'MIT'
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
-  s.module_name  = 'WalletCore'
   
-  s.ios.deployment_target = '12.0'
+  s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
 
   s.source = {
-    git: 'git@github.com:trustwallet/wallet-core.git'
+    git: 'git@github.com:monacohq/wallet-core.git',
+    tag: version,
+    submodules: true
   }
 
   s.default_subspec = 'Core'
 
   s.subspec 'Types' do |ss|
     ss.source_files = 
-      'swift/Sources/Types/*.swift',
       'swift/Sources/Generated/Enums/*.swift',
       'swift/Sources/Generated/Protobuf/*.swift'
     ss.dependency 'SwiftProtobuf'
   end
 
   s.subspec 'Core' do |ss|
-    protobuf_source_dir = 'build/local/src/protobuf/protobuf-3.14.0'
+    protobuf_source_dir = 'build/local/src/protobuf/protobuf-3.9.0'
     include_dir = 'build/local/include'
     ss.source_files =
       'src/**/*.{c,cc,cpp,h}',
@@ -36,14 +36,13 @@ Pod::Spec.new do |s|
       'swift/Sources/*.{swift,h,m,cpp}',
       'swift/Sources/Extensions/*.swift',
       'swift/Sources/Generated/*.{swift,h}',
-      'trezor-crypto/crypto/**/*.{c,h}',
+      'trezor-crypto/src/**/*.{c,h}',
       'trezor-crypto/include/**/*.{h}',
       "#{protobuf_source_dir}/src/google/protobuf/any.cc",
       "#{protobuf_source_dir}/src/google/protobuf/any.pb.cc",
       "#{protobuf_source_dir}/src/google/protobuf/any_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/api.pb.cc",
       "#{protobuf_source_dir}/src/google/protobuf/arena.cc",
-      "#{protobuf_source_dir}/src/google/protobuf/arenastring.cc",
       "#{protobuf_source_dir}/src/google/protobuf/compiler/importer.cc",
       "#{protobuf_source_dir}/src/google/protobuf/compiler/parser.cc",
       "#{protobuf_source_dir}/src/google/protobuf/descriptor.cc",
@@ -70,7 +69,6 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream.cc",
       "#{protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream_impl.cc",
       "#{protobuf_source_dir}/src/google/protobuf/io/zero_copy_stream_impl_lite.cc",
-      "#{protobuf_source_dir}/src/google/protobuf/map.cc",
       "#{protobuf_source_dir}/src/google/protobuf/map_field.cc",
       "#{protobuf_source_dir}/src/google/protobuf/message.cc",
       "#{protobuf_source_dir}/src/google/protobuf/message_lite.cc",
@@ -110,7 +108,6 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/protostream_objectsource.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/protostream_objectwriter.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/type_info.cc",
-      "#{protobuf_source_dir}/src/google/protobuf/util/internal/type_info_test_helper.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/internal/utility.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/json_util.cc",
       "#{protobuf_source_dir}/src/google/protobuf/util/message_differencer.cc",
@@ -120,7 +117,7 @@ Pod::Spec.new do |s|
       "#{protobuf_source_dir}/src/google/protobuf/wire_format_lite.cc",
       "#{protobuf_source_dir}/src/google/protobuf/wrappers.pb.cc"
     ss.exclude_files = 
-      'trezor-crypto/crypto/rand.c',
+      'trezor-crypto/src/rand.c',
       'swift/Sources/Generated/WalletCore.h'
 
     ss.public_header_files =
@@ -128,7 +125,7 @@ Pod::Spec.new do |s|
       'swift/Sources/*.h'
 
     ss.preserve_paths =
-      'trezor-crypto/crypto/*.{table}',
+      'trezor-crypto/src/*.{table}',
       "#{protobuf_source_dir}/src/**/*.{h,inc}",
       "#{include_dir}/nlohmann/**/*.hpp",
       'src/proto/*.proto'
@@ -136,7 +133,7 @@ Pod::Spec.new do |s|
     ss.xcconfig = {
       'HEADER_SEARCH_PATHS' => '$(inherited) ' \
         '${PODS_ROOT}/TrustWalletCore/src ' \
-        '${PODS_ROOT}/TrustWalletCore/trezor-crypto/crypto',
+        '${PODS_ROOT}/TrustWalletCore/trezor-crypto/src',
       'SYSTEM_HEADER_SEARCH_PATHS' => '$(inherited) ' \
         '/usr/local/include ' \
         '${PODS_ROOT}/TrustWalletCore/include ' \
