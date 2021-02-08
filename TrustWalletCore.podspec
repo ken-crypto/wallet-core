@@ -9,14 +9,13 @@ Pod::Spec.new do |s|
   s.authors      = { 'Alejandro Isaza' => 'al@isaza.ca' }
   s.module_name  = 'WalletCore'
   s.ios.deployment_target = '11.0'
-  s.osx.deployment_target = '10.12'
   s.swift_version = '5.1'
 
   s.source = {
     http: "https://github.com/monacohq/wallet-core/releases/download/#{version}/TrustWalletCore-iOS-#{version}.zip"
   }
   s.default_subspec = 'Core'
-
+  
   s.subspec 'Types' do |ss|
     ss.source_files = 
       'swift/Sources/Generated/Enums/*.swift',
@@ -41,7 +40,10 @@ Pod::Spec.new do |s|
         'OTHER_LDFLAGS' => '$(inherited) -fprofile-instr-generate'
     }
     ss.pod_target_xcconfig = {
-        'ARCHS[sdk=iphonesimulator*]' => '$(ARCHS_STANDARD_64_BIT)'
+      'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64'
+    }
+    ss.user_target_xcconfig = { 
+      'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' 
     }
     ss.dependency 'TrustWalletCore/Types'
   end
