@@ -17,7 +17,8 @@ class Entry : public CoinEntry {
   public:
     virtual const std::vector<TWCoinType> coinTypes() const {
         return {
-            TWCoinTypeCosmos, TWCoinTypeKava, TWCoinTypeTerra, TWCoinTypeBandChain, TWCoinTypeCRO,
+            TWCoinTypeCosmos,    TWCoinTypeKava, TWCoinTypeTerra,
+            TWCoinTypeBandChain, TWCoinTypeCRO,  TWCoinTypeTCRO,
         };
     }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh,
