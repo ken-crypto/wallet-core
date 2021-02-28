@@ -168,6 +168,9 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
     case TWCoinTypeCRO:
         entry = &cosmosDP;
         break;
+    case TWCoinTypeTCRO:
+        entry = &cosmosDP;
+        break;
     case TWCoinTypeElrond:
         entry = &elrondDP;
         break;
