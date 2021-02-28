@@ -5,6 +5,7 @@ This list is generated from [./coins.json](../coins.json)
 | Index   | Name             | Symbol | Logo                                                                                                                        | URL                           |
 | ------- | ---------------- | ------ | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
 | 0       | Bitcoin          | BTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/BTC/info/logo.png" width="32" />          | <https://bitcoin.org>         |
+| 1       | TCRO             | TCRO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/tcro/info/logo.png" width="32" />         | <https://chain.crypto.com>    |
 | 2       | Litecoin         | LTC    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/LTC/info/logo.png" width="32" />          | <https://litecoin.org>        |
 | 3       | Dogecoin         | DOGE   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/doge/info/logo.png" width="32" />         | <https://dogecoin.com>        |
 | 5       | Dash             | DASH   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/dash/info/logo.png" width="32" />         | <https://dash.org>            |
@@ -35,7 +36,7 @@ This list is generated from [./coins.json](../coins.json)
 | 313     | Zilliqa          | ZIL    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/zilliqa/info/logo.png" width="32" />      | <https://zilliqa.com>         |
 | 330     | Terra            | LUNA   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/terra/info/logo.png" width="32" />        | <https://terra.money>         |
 | 354     | Polkadot         | DOT    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/polkadot/info/logo.png" width="32" />     | <https://polkadot.network/>   |
-| 394     | CRO              | TCRO   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cro/info/logo.png" width="32" />          | <https://chain.crypto.com>    |
+| 394     | CRO              | CRO    | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cro/info/logo.png" width="32" />          | <https://chain.crypto.com>    |
 | 396     | TON              | GRAM   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ton/info/logo.png" width="32" />          | <https://test.ton.org>        |
 | 397     | NEAR             | NEAR   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/near/info/logo.png" width="32" />         | <https://nearprotocol.com>    |
 | 425     | Aion             | AION   | <img src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aion/info/logo.png" width="32" />         | <https://aion.network>        |

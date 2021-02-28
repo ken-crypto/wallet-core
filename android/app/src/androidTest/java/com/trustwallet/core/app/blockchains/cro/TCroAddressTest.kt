@@ -9,9 +9,9 @@ import wallet.core.jni.AnyAddress
 import wallet.core.jni.CoinType
 import wallet.core.jni.HDWallet
 
-class CroAddressTest {
+class TCroAddressTest {
 
-    private val TAG = "CroAddressTest"
+    private val TAG = "TCroAddressTest"
     private lateinit var hdWallet1: HDWallet
     private lateinit var hdWallet2: HDWallet
     private lateinit var hdWallet3: HDWallet
@@ -40,24 +40,23 @@ class CroAddressTest {
 
     @Test
     fun testAddress() {
-        val privateKey1 = hdWallet1.getKey(CoinType.CRO, "m/44'/394'/0'/0/0")
+        val privateKey1 = hdWallet1.getKey(CoinType.TCRO, "m/44'/1'/0'/0/0")
         val publicKey1 = privateKey1.getPublicKeySecp256k1(true)
-        val address1 = AnyAddress(publicKey1, CoinType.CRO).description()
+        val address1 = AnyAddress(publicKey1, CoinType.TCRO).description()
 
-        val privateKey2 = hdWallet2.getKey(CoinType.CRO, "m/44'/394'/0'/0/0")
+        val privateKey2 = hdWallet2.getKey(CoinType.TCRO, "m/44'/1'/0'/0/0")
         val publicKey2 = privateKey2.getPublicKeySecp256k1(true)
-        val address2 = AnyAddress(publicKey2, CoinType.CRO).description()
+        val address2 = AnyAddress(publicKey2, CoinType.TCRO).description()
 
-        val privateKey3 = hdWallet3.getKey(CoinType.CRO, "m/44'/394'/0'/0/0")
+        val privateKey3 = hdWallet3.getKey(CoinType.TCRO, "m/44'/1'/0'/0/0")
         val publicKey3 = privateKey3.getPublicKeySecp256k1(true)
-        val address3 = AnyAddress(publicKey3, CoinType.CRO).description()
-
+        val address3 = AnyAddress(publicKey3, CoinType.TCRO).description()
         Log.i(TAG,address1)
         Log.i(TAG,address2)
         Log.i(TAG,address3)
 
-        Assert.assertEquals(address1,"cro1qhw03a43g23m9877czt6a0n0cmqyel6hjnqjy4")
-        Assert.assertEquals(address2,"cro1dagn55m73kac8zm982tpycgptxf07yzhp8pyys")
-        Assert.assertEquals(address3,"cro16fdf785ejm00jf9a24d23pzqzjh2h05klxjwu8")
+        Assert.assertEquals(address1, "tcro1fpk0hwpuzdqsjg05rlt72vnrh2598h5q5uzzws")
+        Assert.assertEquals(address2, "tcro10ujdm7hxmc9c7xgnq8yqjn5flg3ycstzft2w4g")
+        Assert.assertEquals(address3, "tcro1z9hasaumxlgf3mkd27xa9yyhuum5g5xytrp3fz")
     }
 }
