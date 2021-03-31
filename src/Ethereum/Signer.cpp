@@ -33,6 +33,8 @@ Proto::SigningOutput Signer::sign(const Proto::SigningInput& input) noexcept {
         auto s = store(transaction.s);
         output.set_s(s.data(), s.size());
 
+        output.set_data(transaction.payload.data(), transaction.payload.size());
+
         return output;
     } catch (std::exception&) {
         return Proto::SigningOutput();
@@ -139,6 +141,24 @@ Transaction Signer::build(const Proto::SigningInput &input) {
                     /* fromAddress: */ tokenFromAddress,
                     /* toAddress */ tokenToAddress,
                     /* tokenId: */ load(input.transaction().erc721_transfer().token_id()));
+                return transaction;
+            }
+
+        case Proto::Transaction::kErc1155Transfer:
+            {
+                Data tokenToAddress = addressStringToData(input.transaction().erc1155_transfer().to());
+                Data tokenFromAddress = addressStringToData(input.transaction().erc1155_transfer().from());
+                auto transaction = Transaction::buildERC1155Transfer(
+                    /* nonce: */ nonce,
+                    /* gasPrice: */ gasPrice,
+                    /* gasLimit: */ gasLimit,
+                    /* tokenContract: */ toAddress,
+                    /* fromAddress: */ tokenFromAddress,
+                    /* toAddress */ tokenToAddress,
+                    /* tokenId: */ load(input.transaction().erc1155_transfer().token_id()),
+                    /* value */ load(input.transaction().erc1155_transfer().value()),
+                    /* data */ Data(input.transaction().erc1155_transfer().data().begin(), input.transaction().erc1155_transfer().data().end())
+                );
                 return transaction;
             }
 

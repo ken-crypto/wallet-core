@@ -8,6 +8,7 @@
 #include "TransactionSigner.h"
 
 #include "../Coin.h"
+#include "../proto/Bitcoin.pb.h"
 
 #include <algorithm>
 #include <cassert>
@@ -68,13 +69,20 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
     auto unspentSelector = UnspentSelector(feeCalculator);
     bool maxAmount = input.use_max_amount();
 
-    if (input.amount() == 0) {
-        plan.error = "Zero amount requested";
+    if (input.amount() == 0 && !maxAmount) {
+        plan.error = Common::Proto::Error_zero_amount_requested;
     } else if (input.utxo().empty()) {
-        plan.error = "Missing input UTXOs";
+        plan.error = Common::Proto::Error_missing_input_utxos;
     } else {
         // select UTXOs
         plan.amount = input.amount();
+
+        // if amount requested is the same or more than available amount, it cannot be satisifed, but
+        // treat this case as MaxAmount, and send maximum available (which will be less)
+        if (!maxAmount && input.amount() >= UnspentSelector::sum(input.utxo())) {
+            maxAmount = true;
+        }
+
         auto output_size = 2;
         if (!maxAmount) {
             output_size = 2; // output + change
@@ -86,13 +94,14 @@ TransactionPlan TransactionBuilder::plan(const Bitcoin::Proto::SigningInput& inp
 
         if (plan.utxos.size() == 0) {
             plan.amount = 0;
-            plan.error = "Not enough non-dust input UTXOs";
+            plan.error = Common::Proto::Error_not_enough_utxos;
         } else {
             plan.availableAmount = UnspentSelector::sum(plan.utxos);
 
             // Compute fee.
             // must preliminary set change so that there is a second output
             if (!maxAmount) {
+                assert(input.amount() <= plan.availableAmount);
                 plan.amount = input.amount();
                 plan.fee = 0;
                 plan.change = plan.availableAmount - plan.amount;
