@@ -20,6 +20,8 @@ public:
             TWCoinTypeKava,
             TWCoinTypeTerra,
             TWCoinTypeBandChain,
+            TWCoinTypeCRO,
+            TWCoinTypeTCRO
         };
     }
     virtual bool validateAddress(TWCoinType coin, const std::string& address, TW::byte p2pkh, TW::byte p2sh, const char* hrp) const;

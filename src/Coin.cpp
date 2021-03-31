@@ -168,6 +168,8 @@ CoinEntry* coinDispatcher(TWCoinType coinType) {
         case TWCoinTypeZelcash: entry = &zcashDP; break;
         case TWCoinTypeZilliqa: entry = &zilliqaDP; break;
         case TWCoinTypePolygon: entry = &ethereumDP; break;
+        case TWCoinTypeTCRO: entry = &cosmosDP; break;
+        case TWCoinTypeCRO: entry = &cosmosDP; break;
         // end_of_coin_dipatcher_switch_marker_do_not_modify
 
         default: entry = nullptr; break;

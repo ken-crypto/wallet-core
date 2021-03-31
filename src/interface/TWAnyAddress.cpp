@@ -75,6 +75,8 @@ TWData* _Nonnull TWAnyAddressData(struct TWAnyAddress* _Nonnull address) {
     switch (address->coin) {
     case TWCoinTypeBinance:
     case TWCoinTypeCosmos:
+    case TWCoinTypeCRO:
+    case TWCoinTypeTCRO:
     case TWCoinTypeKava:
     case TWCoinTypeTerra:
     case TWCoinTypeBandChain:
