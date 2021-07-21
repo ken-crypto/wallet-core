@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -9,15 +9,11 @@
 #include "../Data.h"
 #include "../uint256.h"
 #include "../BinaryCoding.h"
-#include "../HexCoding.h"
 
-#include <nlohmann/json.hpp>
 #include <tuple>
 
 using namespace TW;
 using namespace TW::Ethereum;
-
-using json = nlohmann::json;
 
 Data RLP::encode(const uint256_t& value) noexcept {
     using boost::multiprecision::cpp_int;
@@ -37,20 +33,6 @@ Data RLP::encodeList(const Data& encoded) noexcept {
     result.reserve(result.size() + encoded.size());
     result.insert(result.end(), encoded.begin(), encoded.end());
     return result;
-}
-
-Data RLP::encode(const Transaction& transaction) noexcept {
-    auto encoded = Data();
-    append(encoded, encode(transaction.nonce));
-    append(encoded, encode(transaction.gasPrice));
-    append(encoded, encode(transaction.gasLimit));
-    append(encoded, encode(transaction.to));
-    append(encoded, encode(transaction.amount));
-    append(encoded, encode(transaction.payload));
-    append(encoded, encode(transaction.v));
-    append(encoded, encode(transaction.r));
-    append(encoded, encode(transaction.s));
-    return encodeList(encoded);
 }
 
 Data RLP::encode(const Data& data) noexcept {
@@ -141,26 +123,7 @@ Data RLP::putint(uint64_t i) noexcept {
     // clang-format on
 }
 
-Data RLP::decodeRawTransaction(const Data& data) {
-    auto decoded = decode(data).decoded;
-    if (decoded.size() < 9) {
-        return {};
-    }
-    auto result = json {
-        {"nonce", hexEncoded(decoded[0])},
-        {"gasPrice", hexEncoded(decoded[1])},
-        {"gas", hexEncoded(decoded[2])},
-        {"to", hexEncoded(decoded[3])},
-        {"value", hexEncoded(decoded[4])},
-        {"input", hexEncoded(decoded[5])},
-        {"v", hexEncoded(decoded[6])},
-        {"r", hexEncoded(decoded[7])},
-        {"s", hexEncoded(decoded[8])},
-    }.dump();
-    return Data(result.begin(), result.end());
-}
-
-static RLP::DecodedItem decodeList(const Data& input) {
+RLP::DecodedItem RLP::decodeList(const Data& input) {
     RLP::DecodedItem item;
     auto remainder = input;
     while(true) {
@@ -175,7 +138,7 @@ static RLP::DecodedItem decodeList(const Data& input) {
     return item;
 }
 
-static uint64_t decodeLength(const Data& data) {
+uint64_t RLP::decodeLength(const Data& data) {
     size_t index = 0;
     auto decodedLen = decodeVarInt(data, index);
     if (!std::get<0>(decodedLen)) {
@@ -237,7 +200,6 @@ RLP::DecodedItem RLP::decode(const Data& input) {
         if (inputLen < listLen) {
             throw std::invalid_argument("Invalid rlp string length");
         }
-        
         // empty list
         if (listLen == 0) {
             item.remainder = Data(input.begin() + 1, input.end());

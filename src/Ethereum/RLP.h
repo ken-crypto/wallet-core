@@ -1,4 +1,4 @@
-// Copyright © 2017-2020 Trust Wallet.
+// Copyright © 2017-2021 Trust Wallet.
 //
 // This file is part of Trust. The full Trust copyright notice, including
 // terms governing use, modification, and redistribution, is contained in the
@@ -49,9 +49,6 @@ struct RLP {
 
     static Data encode(const uint256_t& number) noexcept;
 
-    /// Encodes a transaction.
-    static Data encode(const Transaction& transaction) noexcept;
-
     /// Wraps encoded data as a list.
     static Data encodeList(const Data& encoded) noexcept;
 
@@ -100,9 +97,8 @@ struct RLP {
         Data remainder;
     };
 
-    /// Decodes raw transaction to json data
-    static Data decodeRawTransaction(const Data& data);
-
+    static DecodedItem decodeList(const Data& input);
+    static uint64_t decodeLength(const Data& data);
     /// Decodes data, remainder from RLP encoded data
     static DecodedItem decode(const Data& data);
 };
